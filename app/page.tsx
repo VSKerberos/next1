@@ -298,7 +298,7 @@ export default function Home() {
       </section>
 
       {/* Browser & Engines Section */}
-      <section
+      <section 
         id="browsers"
         className="max-w-6xl mx-auto px-6 py-20 border-t border-white/10 scroll-mt-24"
       >
