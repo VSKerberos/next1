@@ -94,7 +94,6 @@ export default function Home() {
           </a>
         </div>
       </nav>
-
       {/* Hero Section */}
       <section
         id="top"
@@ -108,7 +107,7 @@ export default function Home() {
         </h1>
         <p className="text-gray-400 text-lg md:text-xl max-w-3xl mx-auto mb-10">
           Hand-picked links to engineering blogs, browser updates, CSS
-          references, and JavaScript resources — all in one place.  
+          references, and JavaScript resources — all in one place.
         </p>
 
         <div className="flex flex-wrap justify-center gap-3 mb-16">
@@ -131,7 +130,6 @@ export default function Home() {
           <StatCard number="Free" label="Always open" />
         </div>
       </section>
-
       {/* Engineering & Tech News Section */}
       <section
         id="engineering"
@@ -142,7 +140,8 @@ export default function Home() {
             Engineering & Tech News
           </h2>
           <p className="text-gray-400 text-lg max-w-2xl mx-auto">
-            Stay updated with the latest engineering insights and tech news from industry leaders
+            Stay updated with the latest engineering insights and tech news from
+            industry leaders
           </p>
         </div>
 
@@ -296,14 +295,15 @@ export default function Home() {
           />
         </div>
       </section>
-
       {/* Browser & Engines Section */}
-      <section 
+      <section
         id="browsers"
         className="max-w-6xl mx-auto px-6 py-20 border-t border-white/10 scroll-mt-24"
       >
         <div className="text-center mb-16">
-          <h2 className="text-4xl md:text-5xl font-bold mb-4">Browser & Engines</h2>
+          <h2 className="text-4xl md:text-5xl font-bold mb-4">
+            Browser & Engines
+          </h2>
           <p className="text-gray-400 text-lg max-w-2xl mx-auto">
             Latest updates and news from web browsers and rendering engines
           </p>
@@ -382,7 +382,6 @@ export default function Home() {
           />
         </div>
       </section>
-
       {/* CSS Resources Section */}
       <section
         id="css"
@@ -490,7 +489,9 @@ export default function Home() {
         className="max-w-6xl mx-auto px-6 py-20 border-t border-white/10 scroll-mt-24"
       >
         <div className="text-center mb-16">
-          <h2 className="text-4xl md:text-5xl font-bold mb-4">JavaScript Resources</h2>
+          <h2 className="text-4xl md:text-5xl font-bold mb-4">
+            JavaScript Resources
+          </h2>
           <p className="text-gray-400 text-lg max-w-2xl mx-auto">
             Explore essential JavaScript tools and documentation
           </p>
@@ -518,11 +519,39 @@ export default function Home() {
             borderColor="green"
           />
           <ColorfulLinkCard
+            icon="⚛️"
+            title="React"
+            description="Introducing React Dev and latest updates"
+            href="https://react.dev/blog/2023/03/16/introducing-react-dev"
+            borderColor="cyan"
+          />
+          <ColorfulLinkCard
+            icon="🅰️"
+            title="Angular"
+            description="Official Angular framework website"
+            href="https://angular.dev/"
+            borderColor="red"
+          />
+          <ColorfulLinkCard
+            icon="⏭️"
+            title="Next.js"
+            description="Production-ready React framework for the web"
+            href="https://nextjs.org/"
+            borderColor="purple"
+          />
+          <ColorfulLinkCard
             icon="📰"
             title="InfoQ"
             description="JavaScript news and articles"
             href="https://www.infoq.com/javascript/"
             borderColor="purple"
+          />
+          <ColorfulLinkCard
+            icon="📘"
+            title="Learn-Js"
+            description="Interactive JavaScript tutorials"
+            href="https://www.learn-js.org/"
+            borderColor="teal"
           />
           <ColorfulLinkCard
             icon="🎯"
@@ -547,7 +576,6 @@ export default function Home() {
           />
         </div>
       </section>
-
       {/* CTA Section */}
       <section className="max-w-4xl mx-auto px-6 py-20 border-t border-white/10 text-center">
         <h2 className="text-4xl md:text-5xl font-bold mb-6">
@@ -572,7 +600,6 @@ export default function Home() {
           </a>
         </div>
       </section>
-
       {/* Footer */}
       <footer className="border-t border-white/10 px-6 py-12">
         <div className="max-w-6xl mx-auto">
@@ -581,12 +608,18 @@ export default function Home() {
               <h4 className="font-semibold mb-4">Topics</h4>
               <ul className="space-y-2 text-gray-400 text-sm">
                 <li>
-                  <a href="#engineering" className="hover:text-white transition-colors">
+                  <a
+                    href="#engineering"
+                    className="hover:text-white transition-colors"
+                  >
                     Engineering News
                   </a>
                 </li>
                 <li>
-                  <a href="#browsers" className="hover:text-white transition-colors">
+                  <a
+                    href="#browsers"
+                    className="hover:text-white transition-colors"
+                  >
                     Browsers
                   </a>
                 </li>
@@ -596,7 +629,10 @@ export default function Home() {
                   </a>
                 </li>
                 <li>
-                  <a href="#javascript" className="hover:text-white transition-colors">
+                  <a
+                    href="#javascript"
+                    className="hover:text-white transition-colors"
+                  >
                     JavaScript
                   </a>
                 </li>
