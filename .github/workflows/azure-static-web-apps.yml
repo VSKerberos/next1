@@ -23,7 +23,7 @@ jobs:
         run: npm ci
 
       - name: Build
-        run: npm run build --if-present
+        run: npm run build
 
       - name: Deploy to Azure Static Web Apps
         uses: Azure/static-web-apps-deploy@v1
@@ -32,10 +32,8 @@ jobs:
           repo_token: ${{ secrets.GITHUB_TOKEN }} # Used for GitHub integrations (commenting, PR status)
           action: "upload"
           ####
-          # For Next.js, app_location is the repo root and output_location should point to build artifacts.
-          # If you use `next export` and produce an 'out' folder, set output_location: 'out'
-          # For Next.js static hosting, using '.next' can work for SWA's Next support. Adjust if needed.
+          # This repo exports a static site to the 'out' folder.
           ####
           app_location: "/"
           api_location: ""
-          output_location: ".next"
+          output_location: "out"

@@ -3,8 +3,8 @@ Azure Static Web Apps deployment
 Steps to publish this Next.js project to Azure Static Web Apps (SWA):
 
 1) Decide build mode
-   - If your app is fully static (uses only SSG / no getServerSideProps or server-only APIs), you can use `next export` to generate a static 'out' folder.
-     - Run locally: npm ci && npm run build && npm run export
+   - If your app is fully static (uses only SSG / no getServerSideProps or server-only APIs), you can use `next build` to generate a static 'out' folder.
+     - Run locally: npm ci && npm run build
      - This produces an 'out' folder you can serve as static site.
    - If you rely on SSR or server-side APIs, Azure Static Web Apps static hosting may not be suitable; consider Azure App Service instead.
 
