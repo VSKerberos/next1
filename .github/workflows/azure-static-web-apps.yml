@@ -35,6 +35,6 @@ jobs:
           ####
           # This repo exports a static site to the 'out' folder.
           ####
-          app_location: "/"
+          app_location: "."
           api_location: ""
           output_location: "out"
