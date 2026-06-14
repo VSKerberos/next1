@@ -26,6 +26,8 @@ const BORDER_CLASSES: Record<string, string> = {
   gray: "border-gray-500 hover:border-gray-400",
 };
 
+import resources from "../data/resources";
+
 const StatCard = ({ number, label }: { number: string; label: string }) => (
   <div className="bg-white/5 border border-white/10 rounded-xl p-6 text-center hover:border-white/30 transition-all">
     <div className="text-3xl font-bold text-white mb-2">{number}</div>
@@ -146,153 +148,18 @@ export default function Home() {
         </div>
 
         <div className="grid grid-cols-1 md:grid-cols-3 gap-6">
-          <ColorfulLinkCard
-            icon="👨‍💻"
-            title="Dev.to"
-            description="Community of developers sharing articles and discussions"
-            href="https://dev.to/"
-            borderColor="blue"
-          />
-          <ColorfulLinkCard
-            icon="🐙"
-            title="GitHub Blog"
-            description="Updates and stories from GitHub"
-            href="https://github.blog/"
-            borderColor="gray"
-          />
-          <ColorfulLinkCard
-            icon="📱"
-            title="Meta Engineering"
-            description="Engineering insights from Facebook/Meta"
-            href="https://engineering.fb.com/"
-            borderColor="blue"
-          />
-          <ColorfulLinkCard
-            icon="📚"
-            title="DZone"
-            description="Software development news and articles"
-            href="https://dzone.com/coding"
-            borderColor="green"
-          />
-          <ColorfulLinkCard
-            icon="☁️"
-            title="Cloudflare Blog"
-            description="Cloudflare insights and updates"
-            href="https://blog.cloudflare.com/"
-            borderColor="orange"
-          />
-          <ColorfulLinkCard
-            icon="⚙️"
-            title="WP Engine Blog"
-            description="WordPress and web hosting insights"
-            href="https://wpengine.com/blog/"
-            borderColor="blue"
-          />
-          <ColorfulLinkCard
-            icon="🎓"
-            title="Frontend Masters Blog"
-            description="Frontend development tutorials and insights"
-            href="http://frontendmasters.com/blog/"
-            borderColor="purple"
-          />
-          <ColorfulLinkCard
-            icon="🎬"
-            title="Netflix Tech Blog"
-            description="Engineering at Netflix"
-            href="https://netflixtechblog.com/"
-            borderColor="red"
-          />
-          <ColorfulLinkCard
-            icon="🌐"
-            title="SitePoint"
-            description="Web design and development resources"
-            href="https://www.sitepoint.com/"
-            borderColor="yellow"
-          />
-          <ColorfulLinkCard
-            icon="🔧"
-            title="Visual Studio Magazine"
-            description="Visual Studio Code and development tools"
-            href="https://visualstudiomagazine.com/pages/topic-pages/visual-studio-code-news-and-how-to.aspx"
-            borderColor="blue"
-          />
-          <ColorfulLinkCard
-            icon="🛠️"
-            title="Web Tools Weekly"
-            description="Weekly tools and resources for web developers"
-            href="https://webtoolsweekly.com/"
-            borderColor="cyan"
-          />
-          <ColorfulLinkCard
-            icon="🔐"
-            title="Auth0 Blog"
-            description="Authentication and identity insights"
-            href="https://auth0.com/blog/"
-            borderColor="red"
-          />
-          <ColorfulLinkCard
-            icon="⚡"
-            title="TLDR Tech"
-            description="Daily tech news summaries"
-            href="https://tldr.tech/"
-            borderColor="yellow"
-          />
-          <ColorfulLinkCard
-            icon="📊"
-            title="SRE Weekly"
-            description="Site Reliability Engineering news"
-            href="https://sreweekly.com/"
-            borderColor="green"
-          />
-          <ColorfulLinkCard
-            icon="👥"
-            title="NN Group"
-            description="UX research and insights"
-            href="https://www.nngroup.com/articles/"
-            borderColor="purple"
-          />
-          <ColorfulLinkCard
-            icon="🚀"
-            title="Level Up GitConnected"
-            description="Programming tutorials and insights"
-            href="https://levelup.gitconnected.com/"
-            borderColor="orange"
-          />
-          <ColorfulLinkCard
-            icon="💬"
-            title="Tech Talks Weekly"
-            description="Weekly tech talks and discussions"
-            href="https://www.techtalksweekly.io/"
-            borderColor="blue"
-          />
-          <ColorfulLinkCard
-            icon="🎨"
-            title="Web Designer Depot"
-            description="Web design and creativity resources"
-            href="https://webdesignerdepot.com/"
-            borderColor="pink"
-          />
-          <ColorfulLinkCard
-            icon="🔨"
-            title="Bit Blog"
-            description="Component development and insights"
-            href="https://blog.bitsrc.io/"
-            borderColor="purple"
-          />
-          <ColorfulLinkCard
-            icon="✨"
-            title="Smashing Magazine"
-            description="Web design and development articles"
-            href="https://www.smashingmagazine.com/articles/"
-            borderColor="yellow"
-          />
-          <ColorfulLinkCard
-            icon="📰"
-            title="TechTarget"
-            description="Global IT news and insights on enterprise AI, security, and data"
-            href="https://www.techtarget.com/"
-            borderColor="indigo"
-          />
+          {resources
+            .filter(r => r.section === "engineering")
+            .map(r => (
+              <ColorfulLinkCard
+                key={r.href}
+                icon={r.icon}
+                title={r.title}
+                description={r.description}
+                href={r.href}
+                borderColor={r.borderColor}
+              />
+            ))}
         </div>
       </section>
       {/* Browser & Engines Section */}
@@ -310,76 +177,18 @@ export default function Home() {
         </div>
 
         <div className="grid grid-cols-1 md:grid-cols-3 gap-6">
-          <ColorfulLinkCard
-            icon="🌐"
-            title="W3 Blog"
-            description="Web standards and specifications updates"
-            href="https://www.w3.org/blog/"
-            borderColor="blue"
-          />
-          <ColorfulLinkCard
-            icon="🔷"
-            title="Chrome Developer Blog"
-            description="Chrome browser updates and features"
-            href="https://developer.chrome.com/blog?hl=tr"
-            borderColor="blue"
-          />
-          <ColorfulLinkCard
-            icon="♿"
-            title="W3 WAI"
-            description="Web Accessibility Initiative"
-            href="https://www.w3.org/WAI/"
-            borderColor="purple"
-          />
-          <ColorfulLinkCard
-            icon="🔍"
-            title="Google Developers Blog"
-            description="Developer tools and technologies"
-            href="https://developers.googleblog.com/"
-            borderColor="red"
-          />
-          <ColorfulLinkCard
-            icon="⚙️"
-            title="Chromium Blog"
-            description="Chromium engine updates"
-            href="https://blog.google/chromium/"
-            borderColor="yellow"
-          />
-          <ColorfulLinkCard
-            icon="📰"
-            title="W3 News"
-            description="W3C news and announcements"
-            href="https://www.w3.org/news/"
-            borderColor="blue"
-          />
-          <ColorfulLinkCard
-            icon="💻"
-            title="Google Chrome Blog"
-            description="Chrome product announcements"
-            href="https://blog.google/products-and-platforms/products/chrome/"
-            borderColor="green"
-          />
-          <ColorfulLinkCard
-            icon="🦊"
-            title="Mozilla Hacks"
-            description="Firefox and web technology insights"
-            href="https://hacks.mozilla.org/"
-            borderColor="orange"
-          />
-          <ColorfulLinkCard
-            icon="📋"
-            title="WHATWG Blog"
-            description="Web standards community updates"
-            href="https://blog.whatwg.org/"
-            borderColor="yellow"
-          />
-          <ColorfulLinkCard
-            icon="🎭"
-            title="Opera News"
-            description="Opera browser updates and news"
-            href="https://blogs.opera.com/news/"
-            borderColor="red"
-          />
+          {resources
+            .filter(r => r.section === "browsers")
+            .map(r => (
+              <ColorfulLinkCard
+                key={r.href}
+                icon={r.icon}
+                title={r.title}
+                description={r.description}
+                href={r.href}
+                borderColor={r.borderColor}
+              />
+            ))}
         </div>
       </section>
       {/* CSS Resources Section */}
@@ -396,90 +205,18 @@ export default function Home() {
         </div>
 
         <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-6">
-          <ColorfulLinkCard
-            icon="⏱️"
-            title="Transition.Style"
-            description="Create smooth CSS transitions and easing animations"
-            href="https://www.transition.style/#in:circle:hesitate"
-            borderColor="purple"
-          />
-          <ColorfulLinkCard
-            icon="✨"
-            title="Animista"
-            description="Ready-to-use CSS animations library"
-            href="https://animista.net/play/basic/scale-down"
-            borderColor="pink"
-          />
-          <ColorfulLinkCard
-            icon="🖼️"
-            title="Base64 Image"
-            description="Convert images to Base64 encoding"
-            href="https://www.base64-image.de/"
-            borderColor="orange"
-          />
-          <ColorfulLinkCard
-            icon="🎨"
-            title="CSS Filters"
-            description="Visual CSS filter effects generator"
-            href="https://www.cssfilters.co/"
-            borderColor="blue"
-          />
-          <ColorfulLinkCard
-            icon="✂️"
-            title="Clippy"
-            description="CSS clip-path generator for shapes"
-            href="https://bennettfeely.com/clippy/"
-            borderColor="green"
-          />
-          <ColorfulLinkCard
-            icon="💫"
-            title="CSS Glow Generator"
-            description="Create beautiful CSS glow effects"
-            href="https://cssbud.com/css-generator/css-glow-generator/"
-            borderColor="red"
-          />
-          <ColorfulLinkCard
-            icon="🔲"
-            title="Fancy Border Radius"
-            description="Advanced border-radius generator"
-            href="https://9elements.github.io/fancy-border-radius/#29.67.0.35--497.497"
-            borderColor="indigo"
-          />
-          <ColorfulLinkCard
-            icon="🎭"
-            title="Patternizer"
-            description="Generate CSS background patterns"
-            href="https://patternizer.com/"
-            borderColor="teal"
-          />
-          <ColorfulLinkCard
-            icon="✅"
-            title="Can I Use"
-            description="Browser support tables for CSS features"
-            href="https://caniuse.com/"
-            borderColor="yellow"
-          />
-          <ColorfulLinkCard
-            icon="📚"
-            title="MDN CSS Reference"
-            description="Comprehensive CSS documentation"
-            href="https://developer.mozilla.org/en-US/docs/Web/CSS/Reference"
-            borderColor="cyan"
-          />
-          <ColorfulLinkCard
-            icon="🔍"
-            title="CSS Reference"
-            description="Visual CSS property reference"
-            href="https://cssreference.io/"
-            borderColor="purple"
-          />
-          <ColorfulLinkCard
-            icon="🎯"
-            title="CSS-Tricks"
-            description="CSS tutorials and techniques"
-            href="https://css-tricks.com/"
-            borderColor="pink"
-          />
+          {resources
+            .filter(r => r.section === "css")
+            .map(r => (
+              <ColorfulLinkCard
+                key={r.href}
+                icon={r.icon}
+                title={r.title}
+                description={r.description}
+                href={r.href}
+                borderColor={r.borderColor}
+              />
+            ))}
         </div>
       </section>
 
@@ -497,83 +234,18 @@ export default function Home() {
           </p>
         </div>
         <div className="grid grid-cols-1 md:grid-cols-3 gap-6">
-          <ColorfulLinkCard
-            icon="📚"
-            title="JavaScript Info"
-            description="Modern JavaScript tutorial"
-            href="https://javascript.info/"
-            borderColor="yellow"
-          />
-          <ColorfulLinkCard
-            icon="🔧"
-            title="MDN JavaScript"
-            description="Official JavaScript documentation"
-            href="https://developer.mozilla.org/en-US/docs/Web/JavaScript"
-            borderColor="blue"
-          />
-          <ColorfulLinkCard
-            icon="⚡"
-            title="Node.js"
-            description="Server-side JavaScript runtime"
-            href="https://nodejs.org/"
-            borderColor="green"
-          />
-          <ColorfulLinkCard
-            icon="⚛️"
-            title="React"
-            description="Introducing React Dev and latest updates"
-            href="https://react.dev/blog/2023/03/16/introducing-react-dev"
-            borderColor="cyan"
-          />
-          <ColorfulLinkCard
-            icon="🅰️"
-            title="Angular"
-            description="Official Angular framework website"
-            href="https://angular.dev/"
-            borderColor="red"
-          />
-          <ColorfulLinkCard
-            icon="⏭️"
-            title="Next.js"
-            description="Production-ready React framework for the web"
-            href="https://nextjs.org/"
-            borderColor="purple"
-          />
-          <ColorfulLinkCard
-            icon="📰"
-            title="InfoQ"
-            description="JavaScript news and articles"
-            href="https://www.infoq.com/javascript/"
-            borderColor="purple"
-          />
-          <ColorfulLinkCard
-            icon="📘"
-            title="Learn-Js"
-            description="Interactive JavaScript tutorials"
-            href="https://www.learn-js.org/"
-            borderColor="teal"
-          />
-          <ColorfulLinkCard
-            icon="🎯"
-            title="JavaScript Kicks"
-            description="JavaScript articles and resources"
-            href="https://javascriptkicks.com/"
-            borderColor="orange"
-          />
-          <ColorfulLinkCard
-            icon="📧"
-            title="JavaScript Weekly"
-            description="Weekly JavaScript newsletter"
-            href="https://javascriptweekly.com/"
-            borderColor="blue"
-          />
-          <ColorfulLinkCard
-            icon="📘"
-            title="TypeScript Weekly"
-            description="Weekly TypeScript news and articles"
-            href="https://typescript-weekly.com/?ref=inboxreads"
-            borderColor="cyan"
-          />
+          {resources
+            .filter(r => r.section === "javascript")
+            .map(r => (
+              <ColorfulLinkCard
+                key={r.href}
+                icon={r.icon}
+                title={r.title}
+                description={r.description}
+                href={r.href}
+                borderColor={r.borderColor}
+              />
+            ))}
         </div>
       </section>
       {/* CTA Section */}
