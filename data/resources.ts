@@ -1,5 +1,5 @@
 export type Resource = {
-  section: "engineering" | "browsers" | "css" | "javascript";
+  section: "engineering" | "browsers" | "css" | "javascript" | "videos";
   icon: string;
   title: string;
   description: string;
@@ -35,14 +35,6 @@ export const resources: Resource[] = [
   },
   {
     section: "engineering",
-    icon: "📚",
-    title: "DZone",
-    description: "Software development news and articles",
-    href: "https://dzone.com/coding",
-    borderColor: "green",
-  },
-  {
-    section: "engineering",
     icon: "☁️",
     title: "Cloudflare Blog",
     description: "Cloudflare insights and updates",
@@ -64,30 +56,6 @@ export const resources: Resource[] = [
     description: "Frontend development tutorials and insights",
     href: "http://frontendmasters.com/blog/",
     borderColor: "purple",
-  },
-  {
-    section: "engineering",
-    icon: "🎬",
-    title: "Netflix Tech Blog",
-    description: "Engineering at Netflix",
-    href: "https://netflixtechblog.com/",
-    borderColor: "red",
-  },
-  {
-    section: "engineering",
-    icon: "🌐",
-    title: "SitePoint",
-    description: "Web design and development resources",
-    href: "https://www.sitepoint.com/",
-    borderColor: "yellow",
-  },
-  {
-    section: "engineering",
-    icon: "🔧",
-    title: "Visual Studio Magazine",
-    description: "Visual Studio Code and development tools",
-    href: "https://visualstudiomagazine.com/pages/topic-pages/visual-studio-code-news-and-how-to.aspx",
-    borderColor: "blue",
   },
   {
     section: "engineering",
@@ -131,14 +99,6 @@ export const resources: Resource[] = [
   },
   {
     section: "engineering",
-    icon: "🚀",
-    title: "Level Up GitConnected",
-    description: "Programming tutorials and insights",
-    href: "https://levelup.gitconnected.com/",
-    borderColor: "orange",
-  },
-  {
-    section: "engineering",
     icon: "💬",
     title: "Tech Talks Weekly",
     description: "Weekly tech talks and discussions",
@@ -152,14 +112,6 @@ export const resources: Resource[] = [
     description: "Web design and creativity resources",
     href: "https://webdesignerdepot.com/",
     borderColor: "pink",
-  },
-  {
-    section: "engineering",
-    icon: "🔨",
-    title: "Bit Blog",
-    description: "Component development and insights",
-    href: "https://blog.bitsrc.io/",
-    borderColor: "purple",
   },
   {
     section: "engineering",
@@ -261,6 +213,98 @@ export const resources: Resource[] = [
     borderColor: "red",
   },
 
+  // Video Channels
+  {
+    section: "videos",
+    icon: "🎨",
+    title: "AI Engineer",
+    description:
+      "We turn high signal in-person events for the top AI engineers, founders, leaders, and researchers in the world into the best free learning opportunities for ",
+    href: "https://www.youtube.com/@aiDotEngineer",
+    borderColor: "pink",
+  },
+  {
+    section: "videos",
+    icon: "🎬",
+    title: "freeCodeCamp",
+    description: "Free programming tutorials, projects, and full courses",
+    href: "https://www.youtube.com/@freecodecamp",
+    borderColor: "yellow",
+  },
+  {
+    section: "videos",
+    icon: "🎥",
+    title: "Traversy Media",
+    description: "Modern web development tutorials and project walkthroughs",
+    href: "https://www.youtube.com/@TraversyMedia",
+    borderColor: "red",
+  },
+  {
+    section: "videos",
+    icon: "⚡",
+    title: "Web Dev Simplified",
+    description: "Frontend development, JavaScript, and UI tutorials",
+    href: "https://www.youtube.com/@WebDevSimplified",
+    borderColor: "blue",
+  },
+  {
+    section: "videos",
+    icon: "🔥",
+    title: "Fireship",
+    description: "Fast, high-signal engineering and web development videos",
+    href: "https://www.youtube.com/@Fireship",
+    borderColor: "orange",
+  },
+  {
+    section: "videos",
+    icon: "🧠",
+    title: "The Net Ninja",
+    description: "Beginner-friendly coding and web design tutorials",
+    href: "https://www.youtube.com/@NetNinja",
+    borderColor: "green",
+  },
+  {
+    section: "videos",
+    icon: "🧩",
+    title: "Google Developers",
+    description: "Official platform, tooling, and web technology updates",
+    href: "https://www.youtube.com/@GoogleDevelopers",
+    borderColor: "cyan",
+  },
+  {
+    section: "videos",
+    icon: "💻",
+    title: "Microsoft Developer",
+    description: "Developer tools, cloud, AI, and modern web content",
+    href: "https://www.youtube.com/@microsoftdeveloper",
+    borderColor: "indigo",
+  },
+  {
+    section: "videos",
+    icon: "📘",
+    title: "JavaScript Mastery",
+    description: "React, Next.js, and modern JavaScript app builds",
+    href: "https://www.youtube.com/@JavaScriptMastery",
+    borderColor: "purple",
+  },
+  {
+    section: "videos",
+    icon: "🎨",
+    title: "Kevin Powell",
+    description: "CSS, layout, accessibility, and modern frontend craft",
+    href: "https://www.youtube.com/@KevinPowell",
+    borderColor: "pink",
+  },
+  {
+    section: "videos",
+    icon: "🎨",
+    title: "Rise8",
+    description:
+      "Rise8 exists to create a future where fewer bad things happen because of bad software by enabling large enterprises to continuously deliver valuable software users love.",
+    href: "https://www.youtube.com/@Rise8-Software",
+    borderColor: "pink",
+  },
+
   // CSS
   {
     section: "css",
@@ -293,14 +337,6 @@ export const resources: Resource[] = [
     description: "Visual CSS filter effects generator",
     href: "https://www.cssfilters.co/",
     borderColor: "blue",
-  },
-  {
-    section: "css",
-    icon: "✂️",
-    title: "Clippy",
-    description: "CSS clip-path generator for shapes",
-    href: "https://bennettfeely.com/clippy/",
-    borderColor: "green",
   },
   {
     section: "css",
@@ -415,22 +451,6 @@ export const resources: Resource[] = [
     description: "JavaScript news and articles",
     href: "https://www.infoq.com/javascript/",
     borderColor: "purple",
-  },
-  {
-    section: "javascript",
-    icon: "📘",
-    title: "Learn-Js",
-    description: "Interactive JavaScript tutorials",
-    href: "https://www.learn-js.org/",
-    borderColor: "teal",
-  },
-  {
-    section: "javascript",
-    icon: "🎯",
-    title: "JavaScript Kicks",
-    description: "JavaScript articles and resources",
-    href: "https://javascriptkicks.com/",
-    borderColor: "orange",
   },
   {
     section: "javascript",

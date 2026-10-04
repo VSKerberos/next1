@@ -1,6 +1,12 @@
-﻿const NAV_SECTIONS = [
+﻿"use client";
+
+import { useMemo, useState } from "react";
+import resources, { Resource } from "../data/resources";
+
+const NAV_SECTIONS = [
   { label: "Engineering", href: "#engineering" },
   { label: "Browsers", href: "#browsers" },
+  { label: "Videos", href: "#videos" },
   { label: "CSS", href: "#css" },
   { label: "JavaScript", href: "#javascript" },
 ] as const;
@@ -8,8 +14,18 @@
 const QUICK_JUMP_SECTIONS = [
   { label: "Engineering News", href: "#engineering" },
   { label: "Browsers", href: "#browsers" },
+  { label: "Videos", href: "#videos" },
   { label: "CSS", href: "#css" },
   { label: "JavaScript", href: "#javascript" },
+] as const;
+
+const FILTER_TAGS = [
+  { label: "All", value: "all" as const },
+  { label: "Engineering", value: "engineering" as const },
+  { label: "Browsers", value: "browsers" as const },
+  { label: "Videos", value: "videos" as const },
+  { label: "CSS", value: "css" as const },
+  { label: "JavaScript", value: "javascript" as const },
 ] as const;
 
 const BORDER_CLASSES: Record<string, string> = {
@@ -25,8 +41,6 @@ const BORDER_CLASSES: Record<string, string> = {
   cyan: "border-cyan-500 hover:border-cyan-400",
   gray: "border-gray-500 hover:border-gray-400",
 };
-
-import resources from "../data/resources";
 
 const StatCard = ({ number, label }: { number: string; label: string }) => (
   <div className="bg-white/5 border border-white/10 rounded-xl p-6 text-center hover:border-white/30 transition-all">
@@ -66,6 +80,35 @@ const ColorfulLinkCard = ({
 );
 
 export default function Home() {
+  const [searchTerm, setSearchTerm] = useState("");
+  const [activeSection, setActiveSection] = useState<
+    "all" | Resource["section"]
+  >("all");
+  const [menuOpen, setMenuOpen] = useState(false);
+  const [theme, setTheme] = useState<"dark" | "light">("dark");
+
+  const filteredResources = useMemo(
+    () =>
+      resources.filter(resource => {
+        if (activeSection !== "all" && resource.section !== activeSection) {
+          return false;
+        }
+
+        if (!searchTerm.trim()) {
+          return true;
+        }
+
+        const query = searchTerm.toLowerCase();
+        return [resource.title, resource.description, resource.section].some(
+          field => field.toLowerCase().includes(query),
+        );
+      }),
+    [activeSection, searchTerm],
+  );
+
+  const getSectionResources = (section: Resource["section"]) =>
+    filteredResources.filter(resource => resource.section === section);
+
   return (
     <main className="min-h-screen bg-gradient-to-b from-black via-slate-900 to-black text-white overflow-hidden">
       {/* Navigation */}
@@ -88,13 +131,56 @@ export default function Home() {
               </a>
             ))}
           </div>
-          <a
-            href="#engineering"
-            className="px-6 py-2 rounded-lg bg-white text-black font-semibold hover:bg-gray-200 transition-colors shrink-0 text-sm sm:text-base"
-          >
-            Browse resources
-          </a>
+          <div className="flex items-center gap-3">
+            <button
+              type="button"
+              onClick={() => setMenuOpen(open => !open)}
+              aria-label="Toggle navigation menu"
+              className="md:hidden rounded-full p-3 border border-white/10 bg-white/5 text-gray-300 hover:bg-white/10 transition-colors"
+            >
+              <span className="text-lg">☰</span>
+            </button>
+
+            <button
+              type="button"
+              onClick={() => setTheme(theme === "dark" ? "light" : "dark")}
+              aria-label="Toggle theme"
+              className="rounded-full px-3 py-2 text-sm font-semibold border border-white/10 bg-white/5 text-gray-300 hover:bg-white/10 transition-colors"
+            >
+              {theme === "dark" ? "Light" : "Dark"}
+            </button>
+
+            <a
+              href="#engineering"
+              className="hidden md:inline-flex px-6 py-2 rounded-lg bg-white text-black font-semibold hover:bg-gray-200 transition-colors shrink-0 text-sm sm:text-base"
+            >
+              Browse resources
+            </a>
+          </div>
         </div>
+        {menuOpen && (
+          <div className="md:hidden border-t border-white/10 bg-black/80 backdrop-blur-md">
+            <div className="px-6 py-4 space-y-3">
+              {NAV_SECTIONS.map(({ label, href }) => (
+                <a
+                  key={href}
+                  href={href}
+                  onClick={() => setMenuOpen(false)}
+                  className="block rounded-2xl border border-white/10 bg-white/5 px-4 py-3 text-base font-medium text-gray-100 hover:bg-white/10"
+                >
+                  {label}
+                </a>
+              ))}
+              <a
+                href="#engineering"
+                onClick={() => setMenuOpen(false)}
+                className="block rounded-2xl bg-white px-4 py-3 text-base font-semibold text-black hover:bg-gray-200"
+              >
+                Browse resources
+              </a>
+            </div>
+          </div>
+        )}
       </nav>
       {/* Hero Section */}
       <section
@@ -125,11 +211,47 @@ export default function Home() {
         </div>
 
         {/* Stats Grid */}
-        <div className="grid grid-cols-2 md:grid-cols-4 gap-4 mb-20 max-w-3xl mx-auto">
+        <div className="grid grid-cols-2 md:grid-cols-4 gap-4 mb-10 max-w-3xl mx-auto">
           <StatCard number="50+" label="Curated links" />
           <StatCard number="4" label="Topic areas" />
           <StatCard number="100%" label="Frontend focus" />
           <StatCard number="Free" label="Always open" />
+        </div>
+
+        <div className="max-w-4xl mx-auto px-6 mb-16">
+          <label htmlFor="resource-search" className="sr-only">
+            Search resources
+          </label>
+          <div className="relative">
+            <input
+              id="resource-search"
+              type="search"
+              value={searchTerm}
+              onChange={event => setSearchTerm(event.target.value)}
+              placeholder="Search resources by title, description, or category"
+              className="w-full rounded-3xl border border-white/10 bg-white/5 px-5 py-4 text-white placeholder:text-gray-500 focus:border-blue-400 focus:outline-none focus:ring-2 focus:ring-blue-500/30"
+            />
+          </div>
+          <div className="mt-4 flex flex-wrap justify-center gap-2">
+            {FILTER_TAGS.map(filter => (
+              <button
+                key={filter.value}
+                type="button"
+                onClick={() => setActiveSection(filter.value)}
+                className={`rounded-full px-5 py-2 text-sm font-semibold transition-colors ${
+                  activeSection === filter.value
+                    ? "bg-white text-black"
+                    : "border border-white/20 bg-white/5 text-gray-300 hover:border-white/40 hover:bg-white/10"
+                }`}
+              >
+                {filter.label}
+              </button>
+            ))}
+          </div>
+          <p className="mt-4 text-center text-sm text-gray-400">
+            Showing {filteredResources.length} matching resource
+            {filteredResources.length === 1 ? "" : "s"}
+          </p>
         </div>
       </section>
       {/* Engineering & Tech News Section */}
@@ -147,7 +269,7 @@ export default function Home() {
           </p>
         </div>
 
-        <div className="grid grid-cols-1 md:grid-cols-3 gap-6">
+        <div className="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 gap-6">
           {resources
             .filter(r => r.section === "engineering")
             .map(r => (
@@ -176,7 +298,7 @@ export default function Home() {
           </p>
         </div>
 
-        <div className="grid grid-cols-1 md:grid-cols-3 gap-6">
+        <div className="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 gap-6">
           {resources
             .filter(r => r.section === "browsers")
             .map(r => (
@@ -191,6 +313,40 @@ export default function Home() {
             ))}
         </div>
       </section>
+      {/* Video Channels Section */}
+      <section
+        id="videos"
+        className="max-w-6xl mx-auto px-6 py-20 border-t border-white/10 scroll-mt-24"
+      >
+        <div className="text-center mb-16">
+          <h2 className="text-4xl md:text-5xl font-bold mb-4">
+            Video Tutorials & Channels
+          </h2>
+          <p className="text-gray-400 text-lg max-w-2xl mx-auto">
+            High-quality YouTube channels for frontend learning, JavaScript,
+            design, and modern web development.
+          </p>
+        </div>
+
+        <div className="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 gap-6">
+          {getSectionResources("videos").map(r => (
+            <ColorfulLinkCard
+              key={r.href}
+              icon={r.icon}
+              title={r.title}
+              description={r.description}
+              href={r.href}
+              borderColor={r.borderColor}
+            />
+          ))}
+        </div>
+        {getSectionResources("videos").length === 0 && (
+          <p className="mt-6 text-center text-gray-400">
+            No video resources match your search.
+          </p>
+        )}
+      </section>
+
       {/* CSS Resources Section */}
       <section
         id="css"
@@ -205,19 +361,22 @@ export default function Home() {
         </div>
 
         <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-6">
-          {resources
-            .filter(r => r.section === "css")
-            .map(r => (
-              <ColorfulLinkCard
-                key={r.href}
-                icon={r.icon}
-                title={r.title}
-                description={r.description}
-                href={r.href}
-                borderColor={r.borderColor}
-              />
-            ))}
+          {getSectionResources("css").map(r => (
+            <ColorfulLinkCard
+              key={r.href}
+              icon={r.icon}
+              title={r.title}
+              description={r.description}
+              href={r.href}
+              borderColor={r.borderColor}
+            />
+          ))}
         </div>
+        {getSectionResources("css").length === 0 && (
+          <p className="mt-6 text-center text-gray-400">
+            No CSS resources match your search.
+          </p>
+        )}
       </section>
 
       {/* JavaScript Resources Section */}
@@ -233,20 +392,23 @@ export default function Home() {
             Explore essential JavaScript tools and documentation
           </p>
         </div>
-        <div className="grid grid-cols-1 md:grid-cols-3 gap-6">
-          {resources
-            .filter(r => r.section === "javascript")
-            .map(r => (
-              <ColorfulLinkCard
-                key={r.href}
-                icon={r.icon}
-                title={r.title}
-                description={r.description}
-                href={r.href}
-                borderColor={r.borderColor}
-              />
-            ))}
+        <div className="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 gap-6">
+          {getSectionResources("javascript").map(r => (
+            <ColorfulLinkCard
+              key={r.href}
+              icon={r.icon}
+              title={r.title}
+              description={r.description}
+              href={r.href}
+              borderColor={r.borderColor}
+            />
+          ))}
         </div>
+        {getSectionResources("javascript").length === 0 && (
+          <p className="mt-6 text-center text-gray-400">
+            No JavaScript resources match your search.
+          </p>
+        )}
       </section>
       {/* CTA Section */}
       <section className="max-w-4xl mx-auto px-6 py-20 border-t border-white/10 text-center">
@@ -293,6 +455,14 @@ export default function Home() {
                     className="hover:text-white transition-colors"
                   >
                     Browsers
+                  </a>
+                </li>
+                <li>
+                  <a
+                    href="#videos"
+                    className="hover:text-white transition-colors"
+                  >
+                    Videos
                   </a>
                 </li>
                 <li>
