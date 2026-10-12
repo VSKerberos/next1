@@ -9,6 +9,7 @@ const NAV_SECTIONS = [
   { label: "Videos", href: "#videos" },
   { label: "CSS", href: "#css" },
   { label: "JavaScript", href: "#javascript" },
+  { label: "Glossary", href: "#glossary" },
 ] as const;
 
 const QUICK_JUMP_SECTIONS = [
@@ -17,6 +18,7 @@ const QUICK_JUMP_SECTIONS = [
   { label: "Videos", href: "#videos" },
   { label: "CSS", href: "#css" },
   { label: "JavaScript", href: "#javascript" },
+  { label: "Glossary", href: "#glossary" },
 ] as const;
 
 const FILTER_TAGS = [
@@ -26,6 +28,7 @@ const FILTER_TAGS = [
   { label: "Videos", value: "videos" as const },
   { label: "CSS", value: "css" as const },
   { label: "JavaScript", value: "javascript" as const },
+  { label: "Glossary", value: "glossary" as const },
 ] as const;
 
 const BORDER_CLASSES: Record<string, string> = {
@@ -213,7 +216,7 @@ export default function Home() {
         {/* Stats Grid */}
         <div className="grid grid-cols-2 md:grid-cols-4 gap-4 mb-10 max-w-3xl mx-auto">
           <StatCard number="50+" label="Curated links" />
-          <StatCard number="4" label="Topic areas" />
+          <StatCard number="6" label="Topic areas" />
           <StatCard number="100%" label="Frontend focus" />
           <StatCard number="Free" label="Always open" />
         </div>
@@ -410,6 +413,37 @@ export default function Home() {
           </p>
         )}
       </section>
+      {/* Glossary Section */}
+      <section
+        id="glossary"
+        className="max-w-6xl mx-auto px-6 py-20 border-t border-white/10 scroll-mt-24"
+      >
+        <div className="text-center mb-16">
+          <h2 className="text-4xl md:text-5xl font-bold mb-4">
+            Web Development Glossary
+          </h2>
+          <p className="text-gray-400 text-lg max-w-2xl mx-auto">
+            Clear definitions for web platform, CSS, and accessibility terms
+          </p>
+        </div>
+        <div className="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 gap-6">
+          {getSectionResources("glossary").map(r => (
+            <ColorfulLinkCard
+              key={r.href}
+              icon={r.icon}
+              title={r.title}
+              description={r.description}
+              href={r.href}
+              borderColor={r.borderColor}
+            />
+          ))}
+        </div>
+        {getSectionResources("glossary").length === 0 && (
+          <p className="mt-6 text-center text-gray-400">
+            No glossary resources match your search.
+          </p>
+        )}
+      </section>
       {/* CTA Section */}
       <section className="max-w-4xl mx-auto px-6 py-20 border-t border-white/10 text-center">
         <h2 className="text-4xl md:text-5xl font-bold mb-6">
@@ -476,6 +510,14 @@ export default function Home() {
                     className="hover:text-white transition-colors"
                   >
                     JavaScript
+                  </a>
+                </li>
+                <li>
+                  <a
+                    href="#glossary"
+                    className="hover:text-white transition-colors"
+                  >
+                    Glossary
                   </a>
                 </li>
               </ul>

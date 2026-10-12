@@ -1,5 +1,11 @@
 export type Resource = {
-  section: "engineering" | "browsers" | "css" | "javascript" | "videos";
+  section:
+    | "engineering"
+    | "browsers"
+    | "css"
+    | "javascript"
+    | "videos"
+    | "glossary";
   icon: string;
   title: string;
   description: string;
@@ -467,6 +473,64 @@ export const resources: Resource[] = [
     description: "Weekly TypeScript news and articles",
     href: "https://typescript-weekly.com/?ref=inboxreads",
     borderColor: "cyan",
+  },
+
+  // Glossary
+  {
+    section: "glossary",
+    icon: "📖",
+    title: "MDN Web Docs Glossary",
+    description: "Definitions of common web development terms",
+    href: "https://developer.mozilla.org/en-US/docs/Glossary",
+    borderColor: "blue",
+  },
+  {
+    section: "glossary",
+    icon: "📚",
+    title: "TechTarget WhatIs",
+    description: "Definitions of technology terms and concepts",
+    href: "https://www.techtarget.com/whatis/definitions/A",
+    borderColor: "blue",
+  },
+  {
+    section: "glossary",
+    icon: "🌐",
+    title: "WHATWG Infra Terminology",
+    description: "Terminology used across web platform standards",
+    href: "https://infra.spec.whatwg.org/#terminology",
+    borderColor: "green",
+  },
+  {
+    section: "glossary",
+    icon: "🎨",
+    title: "CSS Values Glossary",
+    description: "Definitions for CSS values and related concepts",
+    href: "https://www.w3.org/TR/css-values-4/#glossary",
+    borderColor: "cyan",
+  },
+  {
+    section: "glossary",
+    icon: "🧭",
+    title: "Webflow Glossary",
+    description: "Web design and development terminology",
+    href: "https://university.webflow.com/glossary",
+    borderColor: "teal",
+  },
+  {
+    section: "glossary",
+    icon: "🧩",
+    title: "Clutch Web Development Glossary",
+    description: "A glossary of 93 essential web development terms",
+    href: "https://clutch.co/resources/web-development-glossary-93-essential-terms",
+    borderColor: "orange",
+  },
+  {
+    section: "glossary",
+    icon: "🎓",
+    title: "Coursera Web Development Terms",
+    description: "Key terms and concepts in web development",
+    href: "https://www.coursera.org/resources/web-development-terms",
+    borderColor: "blue",
   },
 ];
 
