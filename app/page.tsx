@@ -1,6 +1,7 @@
 ﻿"use client";
 
 import { useMemo, useState } from "react";
+import Link from "next/link";
 import resources, { Resource } from "../data/resources";
 
 const NAV_SECTIONS = [
@@ -10,6 +11,7 @@ const NAV_SECTIONS = [
   { label: "CSS", href: "#css" },
   { label: "JavaScript", href: "#javascript" },
   { label: "Glossary", href: "#glossary" },
+  { label: "Games", href: "#games" },
 ] as const;
 
 const QUICK_JUMP_SECTIONS = [
@@ -19,6 +21,7 @@ const QUICK_JUMP_SECTIONS = [
   { label: "CSS", href: "#css" },
   { label: "JavaScript", href: "#javascript" },
   { label: "Glossary", href: "#glossary" },
+  { label: "Games", href: "#games" },
 ] as const;
 
 const FILTER_TAGS = [
@@ -29,6 +32,7 @@ const FILTER_TAGS = [
   { label: "CSS", value: "css" as const },
   { label: "JavaScript", value: "javascript" as const },
   { label: "Glossary", value: "glossary" as const },
+  { label: "Games", value: "games" as const },
 ] as const;
 
 const BORDER_CLASSES: Record<string, string> = {
@@ -64,23 +68,36 @@ const ColorfulLinkCard = ({
   description: string;
   href: string;
   borderColor: string;
-}) => (
-  <a
-    href={href}
-    target="_blank"
-    rel="noopener noreferrer"
-    className={`block bg-white/5 border-2 ${BORDER_CLASSES[borderColor] ?? "border-white/10"} rounded-2xl p-6 hover:bg-white/10 transition-all duration-300 group no-underline`}
-  >
-    <div className="text-3xl mb-3 group-hover:scale-110 transition-transform duration-300">
-      {icon}
-    </div>
-    <h3 className="text-lg font-semibold text-white mb-2">{title}</h3>
-    <p className="text-gray-400 text-sm leading-relaxed mb-4">{description}</p>
-    <span className="text-xs text-blue-400 font-semibold group-hover:text-blue-300 transition-colors">
-      → Visit site
-    </span>
-  </a>
-);
+}) => {
+  const content = (
+    <>
+      <div className="text-3xl mb-3 group-hover:scale-110 transition-transform duration-300">
+        {icon}
+      </div>
+      <h3 className="text-lg font-semibold text-white mb-2">{title}</h3>
+      <p className="text-gray-400 text-sm leading-relaxed mb-4">{description}</p>
+      <span className="text-xs text-blue-400 font-semibold group-hover:text-blue-300 transition-colors">
+        {href.startsWith("/") ? "→ Play now" : "→ Visit site"}
+      </span>
+    </>
+  );
+  const className = `block bg-white/5 border-2 ${BORDER_CLASSES[borderColor] ?? "border-white/10"} rounded-2xl p-6 hover:bg-white/10 transition-all duration-300 group no-underline`;
+
+  return href.startsWith("/") ? (
+    <Link href={href} className={className}>
+      {content}
+    </Link>
+  ) : (
+    <a
+      href={href}
+      target="_blank"
+      rel="noopener noreferrer"
+      className={className}
+    >
+      {content}
+    </a>
+  );
+};
 
 export default function Home() {
   const [searchTerm, setSearchTerm] = useState("");
@@ -88,7 +105,6 @@ export default function Home() {
     "all" | Resource["section"]
   >("all");
   const [menuOpen, setMenuOpen] = useState(false);
-  const [theme, setTheme] = useState<"dark" | "light">("dark");
 
   const filteredResources = useMemo(
     () =>
@@ -142,15 +158,6 @@ export default function Home() {
               className="md:hidden rounded-full p-3 border border-white/10 bg-white/5 text-gray-300 hover:bg-white/10 transition-colors"
             >
               <span className="text-lg">☰</span>
-            </button>
-
-            <button
-              type="button"
-              onClick={() => setTheme(theme === "dark" ? "light" : "dark")}
-              aria-label="Toggle theme"
-              className="rounded-full px-3 py-2 text-sm font-semibold border border-white/10 bg-white/5 text-gray-300 hover:bg-white/10 transition-colors"
-            >
-              {theme === "dark" ? "Light" : "Dark"}
             </button>
 
             <a
@@ -273,19 +280,22 @@ export default function Home() {
         </div>
 
         <div className="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 gap-6">
-          {resources
-            .filter(r => r.section === "engineering")
-            .map(r => (
-              <ColorfulLinkCard
-                key={r.href}
-                icon={r.icon}
-                title={r.title}
-                description={r.description}
-                href={r.href}
-                borderColor={r.borderColor}
-              />
-            ))}
+          {getSectionResources("engineering").map(r => (
+            <ColorfulLinkCard
+              key={r.href}
+              icon={r.icon}
+              title={r.title}
+              description={r.description}
+              href={r.href}
+              borderColor={r.borderColor}
+            />
+          ))}
         </div>
+        {getSectionResources("engineering").length === 0 && (
+          <p className="mt-6 text-center text-gray-400">
+            No engineering resources match your search.
+          </p>
+        )}
       </section>
       {/* Browser & Engines Section */}
       <section
@@ -302,19 +312,22 @@ export default function Home() {
         </div>
 
         <div className="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 gap-6">
-          {resources
-            .filter(r => r.section === "browsers")
-            .map(r => (
-              <ColorfulLinkCard
-                key={r.href}
-                icon={r.icon}
-                title={r.title}
-                description={r.description}
-                href={r.href}
-                borderColor={r.borderColor}
-              />
-            ))}
+          {getSectionResources("browsers").map(r => (
+            <ColorfulLinkCard
+              key={r.href}
+              icon={r.icon}
+              title={r.title}
+              description={r.description}
+              href={r.href}
+              borderColor={r.borderColor}
+            />
+          ))}
         </div>
+        {getSectionResources("browsers").length === 0 && (
+          <p className="mt-6 text-center text-gray-400">
+            No browser resources match your search.
+          </p>
+        )}
       </section>
       {/* Video Channels Section */}
       <section
@@ -444,6 +457,35 @@ export default function Home() {
           </p>
         )}
       </section>
+      {/* Games Section */}
+      <section
+        id="games"
+        className="max-w-6xl mx-auto px-6 py-20 border-t border-white/10 scroll-mt-24"
+      >
+        <div className="text-center mb-16">
+          <h2 className="text-4xl md:text-5xl font-bold mb-4">Games</h2>
+          <p className="text-gray-400 text-lg max-w-2xl mx-auto">
+            Take a break and play a classic game.
+          </p>
+        </div>
+        <div className="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 gap-6">
+          {getSectionResources("games").map(game => (
+            <ColorfulLinkCard
+              key={game.href}
+              icon={game.icon}
+              title={game.title}
+              description={game.description}
+              href={game.href}
+              borderColor={game.borderColor}
+            />
+          ))}
+        </div>
+        {getSectionResources("games").length === 0 && (
+          <p className="mt-6 text-center text-gray-400">
+            No games match your search.
+          </p>
+        )}
+      </section>
       {/* CTA Section */}
       <section className="max-w-4xl mx-auto px-6 py-20 border-t border-white/10 text-center">
         <h2 className="text-4xl md:text-5xl font-bold mb-6">
@@ -518,6 +560,11 @@ export default function Home() {
                     className="hover:text-white transition-colors"
                   >
                     Glossary
+                  </a>
+                </li>
+                <li>
+                  <a href="#games" className="hover:text-white transition-colors">
+                    Games
                   </a>
                 </li>
               </ul>

@@ -5,7 +5,8 @@ export type Resource = {
     | "css"
     | "javascript"
     | "videos"
-    | "glossary";
+    | "glossary"
+    | "games";
   icon: string;
   title: string;
   description: string;
@@ -531,6 +532,16 @@ export const resources: Resource[] = [
     description: "Key terms and concepts in web development",
     href: "https://www.coursera.org/resources/web-development-terms",
     borderColor: "blue",
+  },
+
+  // Games
+  {
+    section: "games",
+    icon: "🎲",
+    title: "Dominoes",
+    description: "Play a classic draw game against the computer",
+    href: "/games/dominoes",
+    borderColor: "teal",
   },
 ];
 
