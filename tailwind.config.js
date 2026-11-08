@@ -8,10 +8,11 @@ module.exports = {
   theme: {
     extend: {
       colors: {
-        background: "#0B0E14",
-        card: "#16191F",
-        border: "rgba(255, 255, 255, 0.1)",
-        accent: "#5E6AD2", // Linear'ın imza moru
+        background: "#0b0e14",
+        card: "#16191f",
+        "card-hover": "#1c2029",
+        accent: "#5e6ad2",
+        "border-color": "rgba(255, 255, 255, 0.08)",
       },
       fontFamily: {
         sans: ["Inter", "sans-serif"],

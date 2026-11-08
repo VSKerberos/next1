@@ -62,26 +62,53 @@ const ColorfulLinkCard = ({
   description,
   href,
   borderColor,
+  featured = false,
 }: {
   icon: string;
   title: string;
   description: string;
   href: string;
   borderColor: string;
+  featured?: boolean;
 }) => {
   const content = (
     <>
-      <div className="text-3xl mb-3 group-hover:scale-110 transition-transform duration-300">
+      <div
+        className={`mb-3 text-3xl transition-transform duration-300 ${
+          featured ? "" : "group-hover:scale-110"
+        }`}
+      >
         {icon}
       </div>
       <h3 className="text-lg font-semibold text-white mb-2">{title}</h3>
       <p className="text-gray-400 text-sm leading-relaxed mb-4">{description}</p>
-      <span className="text-xs text-blue-400 font-semibold group-hover:text-blue-300 transition-colors">
+      {featured && (
+        <div className="mt-4 border-t border-white/10 pt-5">
+          <p className="mb-2 text-xs font-semibold uppercase tracking-wider text-slate-300">
+            Community writing
+          </p>
+          <p className="mb-4 max-w-xl text-sm leading-relaxed text-slate-400">
+            Explore practical tutorials, solutions, and lessons shared by
+            developers from across the web community.
+          </p>
+          <div className="flex flex-wrap gap-2">
+            {["React", "CSS", "JavaScript"].map(topic => (
+              <span
+                key={topic}
+                className="rounded-full border border-white/10 bg-white/5 px-3 py-1 text-xs text-slate-300"
+              >
+                {topic}
+              </span>
+            ))}
+          </div>
+        </div>
+      )}
+      <span className="mt-auto text-xs text-blue-400 font-semibold group-hover:text-blue-300 transition-colors">
         {href.startsWith("/") ? "→ Play now" : "→ Visit site"}
       </span>
     </>
   );
-  const className = `block bg-white/5 border-2 ${BORDER_CLASSES[borderColor] ?? "border-white/10"} rounded-2xl p-6 hover:bg-white/10 transition-all duration-300 group no-underline`;
+  const className = `flex h-full flex-col overflow-hidden bg-card border-2 ${BORDER_CLASSES[borderColor] ?? "border-white/10"} rounded-2xl p-6 hover:bg-card-hover transition-all duration-300 group no-underline`;
 
   return href.startsWith("/") ? (
     <Link href={href} className={className}>
@@ -129,7 +156,7 @@ export default function Home() {
     filteredResources.filter(resource => resource.section === section);
 
   return (
-    <main className="min-h-screen bg-gradient-to-b from-black via-slate-900 to-black text-white overflow-hidden">
+    <main className="min-h-screen bg-gradient-to-b from-transparent via-slate-900/80 to-transparent text-white overflow-hidden">
       {/* Navigation */}
       <nav className="sticky top-0 z-50 backdrop-blur-md bg-black/30 border-b border-white/10">
         <div className="max-w-7xl mx-auto px-6 py-4 flex justify-between items-center gap-4">
@@ -222,8 +249,11 @@ export default function Home() {
 
         {/* Stats Grid */}
         <div className="grid grid-cols-2 md:grid-cols-4 gap-4 mb-10 max-w-3xl mx-auto">
-          <StatCard number="50+" label="Curated links" />
-          <StatCard number="6" label="Topic areas" />
+          <StatCard number={String(resources.length)} label="Curated links" />
+          <StatCard
+            number={String(new Set(resources.map(resource => resource.section)).size)}
+            label="Topic areas"
+          />
           <StatCard number="100%" label="Frontend focus" />
           <StatCard number="Free" label="Always open" />
         </div>
@@ -262,6 +292,48 @@ export default function Home() {
             Showing {filteredResources.length} matching resource
             {filteredResources.length === 1 ? "" : "s"}
           </p>
+        </div>
+      </section>
+      {/* Featured Resources Bento Grid */}
+      <section
+        aria-labelledby="featured-resources-heading"
+        className="max-w-6xl mx-auto px-6 pb-16 scroll-mt-24"
+      >
+        <div className="mb-6 flex items-end justify-between gap-4">
+          <div>
+            <p className="mb-2 text-xs font-semibold uppercase tracking-wider text-accent">
+              Explore
+            </p>
+            <h2
+              id="featured-resources-heading"
+              className="text-2xl font-bold text-white"
+            >
+              Featured resources
+            </h2>
+          </div>
+          <a
+            href="#engineering"
+            className="text-sm text-slate-400 transition-colors hover:text-white"
+          >
+            Browse all resources &rarr;
+          </a>
+        </div>
+        <div className="grid auto-rows-fr grid-cols-1 gap-4 md:grid-cols-3">
+          {resources.slice(0, 3).map((resource, index) => (
+            <div
+              key={resource.href}
+              className={index === 0 ? "md:col-span-2 md:row-span-2" : ""}
+            >
+              <ColorfulLinkCard
+                icon={resource.icon}
+                title={resource.title}
+                description={resource.description}
+                href={resource.href}
+                borderColor={resource.borderColor}
+                featured={index === 0}
+              />
+            </div>
+          ))}
         </div>
       </section>
       {/* Engineering & Tech News Section */}
