@@ -5,6 +5,7 @@ import Link from "next/link";
 import resources, { Resource } from "../data/resources";
 
 const NAV_SECTIONS = [
+  { label: "Roadmaps", href: "#roadmap" },
   { label: "Engineering", href: "#engineering" },
   { label: "Browsers", href: "#browsers" },
   { label: "Videos", href: "#videos" },
@@ -12,6 +13,33 @@ const NAV_SECTIONS = [
   { label: "JavaScript", href: "#javascript" },
   { label: "Glossary", href: "#glossary" },
   { label: "Games", href: "#games" },
+] as const;
+
+const ROADMAP_GUIDES = [
+  {
+    name: "roadmap.sh",
+    category: "Interactive roadmaps",
+    description:
+      "Explore visual, step-by-step roadmaps for frontend, JavaScript, and other software development paths.",
+    href: "https://roadmap.sh/",
+    icon: "🗺️",
+  },
+  {
+    name: "State of JS",
+    category: "Ecosystem insights",
+    description:
+      "Explore JavaScript ecosystem surveys and trends to learn which tools and technologies developers are using.",
+    href: "https://stateofjs.com/",
+    icon: "📊",
+  },
+  {
+    name: "MDN Curriculum",
+    category: "Structured curriculum",
+    description:
+      "Follow a structured path through essential frontend skills, from web standards to practical development.",
+    href: "https://developer.mozilla.org/en-US/curriculum/",
+    icon: "📚",
+  },
 ] as const;
 
 const QUICK_JUMP_SECTIONS = [
@@ -132,6 +160,7 @@ export default function Home() {
     "all" | Resource["section"]
   >("all");
   const [menuOpen, setMenuOpen] = useState(false);
+  const [activeRoadmap, setActiveRoadmap] = useState(0);
 
   const filteredResources = useMemo(
     () =>
@@ -334,6 +363,79 @@ export default function Home() {
               />
             </div>
           ))}
+        </div>
+      </section>
+      {/* Interactive Roadmap Module */}
+      <section
+        id="roadmap"
+        aria-labelledby="roadmap-heading"
+        className="max-w-6xl mx-auto px-6 pb-16 scroll-mt-24"
+      >
+        <div className="mb-6">
+          <p className="mb-2 text-xs font-semibold uppercase tracking-wider text-accent">
+            Plan your learning
+          </p>
+          <h2 id="roadmap-heading" className="text-2xl font-bold text-white">
+            Interactive roadmaps
+          </h2>
+          <p className="mt-2 max-w-2xl text-sm text-slate-400">
+            Choose a guide to explore learning paths, curriculum, and
+            JavaScript ecosystem trends.
+          </p>
+        </div>
+        <div className="grid gap-4 md:grid-cols-[minmax(0,1fr)_minmax(0,1.4fr)]">
+          <div
+            role="group"
+            aria-label="Choose a roadmap resource"
+            className="grid gap-3 sm:grid-cols-3 md:grid-cols-1"
+          >
+            {ROADMAP_GUIDES.map((guide, index) => (
+              <button
+                key={guide.name}
+                type="button"
+                aria-pressed={activeRoadmap === index}
+                onClick={() => setActiveRoadmap(index)}
+                className={`flex items-center gap-3 rounded-xl border p-4 text-left transition-colors ${
+                  activeRoadmap === index
+                    ? "border-accent/60 bg-accent/10 text-white"
+                    : "border-white/10 bg-white/[0.03] text-slate-300 hover:border-white/20 hover:bg-white/[0.06]"
+                }`}
+              >
+                <span aria-hidden="true" className="text-xl">
+                  {guide.icon}
+                </span>
+                <span>
+                  <span className="block font-semibold">{guide.name}</span>
+                  <span className="mt-1 block text-xs text-slate-400">
+                    {guide.category}
+                  </span>
+                </span>
+              </button>
+            ))}
+          </div>
+          <div
+            aria-live="polite"
+            className="flex flex-col items-start justify-center rounded-2xl border border-border-color bg-card p-6 md:p-8"
+          >
+            <p className="text-xs font-semibold uppercase tracking-wider text-accent">
+              {ROADMAP_GUIDES[activeRoadmap].category}
+            </p>
+            <h3 className="mt-3 text-xl font-bold text-white">
+              {ROADMAP_GUIDES[activeRoadmap].name}
+            </h3>
+            <p className="mt-3 max-w-xl text-sm leading-relaxed text-slate-400">
+              {ROADMAP_GUIDES[activeRoadmap].description}
+            </p>
+            <a
+              href={ROADMAP_GUIDES[activeRoadmap].href}
+              target="_blank"
+              rel="noopener noreferrer"
+              className="mt-6 inline-flex items-center gap-2 rounded-lg bg-white px-4 py-2.5 text-sm font-semibold text-black transition-colors hover:bg-slate-200"
+            >
+              Explore {ROADMAP_GUIDES[activeRoadmap].name}
+              <span aria-hidden="true">&rarr;</span>
+            </a>
+          </div>
         </div>
       </section>
       {/* Engineering & Tech News Section */}
