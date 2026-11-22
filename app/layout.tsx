@@ -30,7 +30,7 @@ export default function RootLayout({
       suppressHydrationWarning
     >
       <body
-        className="relative isolate flex min-h-screen flex-col overflow-x-hidden bg-background text-slate-100 antialiased"
+        className="relative isolate flex min-h-screen flex-col bg-background text-slate-100 antialiased"
         suppressHydrationWarning
       >
         <div

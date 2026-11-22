@@ -1,19 +1,8 @@
 ﻿"use client";
 
-import { useMemo, useState } from "react";
+import { useEffect, useMemo, useState } from "react";
 import Link from "next/link";
 import resources, { Resource } from "../data/resources";
-
-const NAV_SECTIONS = [
-  { label: "Roadmaps", href: "#roadmap" },
-  { label: "Engineering", href: "#engineering" },
-  { label: "Browsers", href: "#browsers" },
-  { label: "Videos", href: "#videos" },
-  { label: "CSS", href: "#css" },
-  { label: "JavaScript", href: "#javascript" },
-  { label: "Glossary", href: "#glossary" },
-  { label: "Games", href: "#games" },
-] as const;
 
 const ROADMAP_GUIDES = [
   {
@@ -43,6 +32,7 @@ const ROADMAP_GUIDES = [
 ] as const;
 
 const QUICK_JUMP_SECTIONS = [
+  { label: "Roadmaps", href: "#roadmap" },
   { label: "Engineering News", href: "#engineering" },
   { label: "Browsers", href: "#browsers" },
   { label: "Videos", href: "#videos" },
@@ -136,7 +126,7 @@ const ColorfulLinkCard = ({
       </span>
     </>
   );
-  const className = `flex h-full flex-col overflow-hidden bg-card border-2 ${BORDER_CLASSES[borderColor] ?? "border-white/10"} rounded-2xl p-6 hover:bg-card-hover transition-all duration-300 group no-underline`;
+  const className = `flex h-full min-h-40 flex-col overflow-hidden rounded-2xl border bg-card ${BORDER_CLASSES[borderColor] ?? "border-white/10"} p-5 transition-all duration-300 hover:-translate-y-0.5 hover:scale-[1.01] hover:bg-card-hover hover:shadow-xl hover:shadow-accent/10 focus-visible:-translate-y-0.5 focus-visible:scale-[1.01] focus-visible:shadow-xl focus-visible:shadow-accent/10 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-accent/50 motion-reduce:transition-none motion-reduce:transform-none group no-underline`;
 
   return href.startsWith("/") ? (
     <Link href={href} className={className}>
@@ -159,8 +149,34 @@ export default function Home() {
   const [activeSection, setActiveSection] = useState<
     "all" | Resource["section"]
   >("all");
-  const [menuOpen, setMenuOpen] = useState(false);
   const [activeRoadmap, setActiveRoadmap] = useState(0);
+  const [filterAnimationVersion, setFilterAnimationVersion] = useState(0);
+  const [scrollRequest, setScrollRequest] = useState<{
+    targetId: string;
+  } | null>(null);
+
+  useEffect(() => {
+    if (!scrollRequest) return;
+
+    const target = document.getElementById(scrollRequest.targetId);
+    if (!target) {
+      console.error(`Unable to find section "${scrollRequest.targetId}".`);
+      return;
+    }
+
+    target.scrollIntoView({ behavior: "smooth", block: "start" });
+  }, [scrollRequest]);
+
+  const updateSectionFilter = (section: "all" | Resource["section"]) => {
+    setActiveSection(section);
+    setFilterAnimationVersion(version => version + 1);
+  };
+
+  const handleSectionChange = (section: "all" | Resource["section"]) => {
+    updateSectionFilter(section);
+    const targetId = section === "all" ? "top" : section;
+    setScrollRequest({ targetId });
+  };
 
   const filteredResources = useMemo(
     () =>
@@ -185,91 +201,76 @@ export default function Home() {
     filteredResources.filter(resource => resource.section === section);
 
   return (
-    <main className="min-h-screen bg-gradient-to-b from-transparent via-slate-900/80 to-transparent text-white overflow-hidden">
-      {/* Navigation */}
-      <nav className="sticky top-0 z-50 backdrop-blur-md bg-black/30 border-b border-white/10">
-        <div className="max-w-7xl mx-auto px-6 py-4 flex justify-between items-center gap-4">
+    <main className="min-h-screen bg-gradient-to-b from-transparent via-slate-900/80 to-transparent text-white">
+      <header className="border-b border-white/10 bg-black/20">
+        <div className="mx-auto flex max-w-7xl items-center px-4 py-3 sm:px-6">
           <a
             href="#top"
-            className="text-2xl font-bold bg-gradient-to-r from-white to-gray-500 bg-clip-text text-transparent shrink-0"
+            className="text-lg font-bold tracking-tight text-white sm:text-xl"
           >
             Frontend Portal
           </a>
-          <div className="hidden md:flex items-center gap-6 text-sm text-gray-400">
-            {NAV_SECTIONS.map(({ label, href }) => (
-              <a
-                key={href}
-                href={href}
-                className="hover:text-white transition-colors"
+        </div>
+      </header>
+      <div className="sticky top-0 z-50 border-b border-white/10 bg-background/95 px-4 py-3 backdrop-blur-xl sm:px-6">
+        <div className="mx-auto flex max-w-6xl flex-col gap-3 lg:flex-row lg:items-center">
+          <label htmlFor="resource-search" className="sr-only">
+            Search resources
+          </label>
+          <div className="relative lg:w-72 xl:w-96">
+            <input
+              id="resource-search"
+              type="search"
+              value={searchTerm}
+              onChange={event => setSearchTerm(event.target.value)}
+              placeholder="Search resources"
+              className="w-full rounded-xl border border-white/10 bg-white/5 px-4 py-2.5 text-sm text-white placeholder:text-slate-500 focus:border-accent/70 focus:outline-none focus:ring-2 focus:ring-accent/20"
+            />
+          </div>
+          <div className="flex gap-2 overflow-x-auto pb-1 [scrollbar-width:none] [&::-webkit-scrollbar]:hidden lg:pb-0">
+            {FILTER_TAGS.map(filter => (
+              <button
+                key={filter.value}
+                type="button"
+                onClick={() => handleSectionChange(filter.value)}
+                aria-pressed={activeSection === filter.value}
+                className={`shrink-0 rounded-full px-3.5 py-2 text-xs font-semibold transition-colors sm:text-sm ${
+                  activeSection === filter.value
+                    ? "bg-white text-black"
+                    : "border border-white/10 bg-white/[0.03] text-slate-300 hover:border-white/30 hover:bg-white/[0.07]"
+                }`}
               >
-                {label}
-              </a>
+                {filter.label}
+              </button>
             ))}
           </div>
-          <div className="flex items-center gap-3">
-            <button
-              type="button"
-              onClick={() => setMenuOpen(open => !open)}
-              aria-label="Toggle navigation menu"
-              className="md:hidden rounded-full p-3 border border-white/10 bg-white/5 text-gray-300 hover:bg-white/10 transition-colors"
-            >
-              <span className="text-lg">☰</span>
-            </button>
-
-            <a
-              href="#engineering"
-              className="hidden md:inline-flex px-6 py-2 rounded-lg bg-white text-black font-semibold hover:bg-gray-200 transition-colors shrink-0 text-sm sm:text-base"
-            >
-              Browse resources
-            </a>
-          </div>
+          <p className="shrink-0 text-xs text-slate-400 lg:ml-auto lg:text-sm">
+            {filteredResources.length} matches
+          </p>
         </div>
-        {menuOpen && (
-          <div className="md:hidden border-t border-white/10 bg-black/80 backdrop-blur-md">
-            <div className="px-6 py-4 space-y-3">
-              {NAV_SECTIONS.map(({ label, href }) => (
-                <a
-                  key={href}
-                  href={href}
-                  onClick={() => setMenuOpen(false)}
-                  className="block rounded-2xl border border-white/10 bg-white/5 px-4 py-3 text-base font-medium text-gray-100 hover:bg-white/10"
-                >
-                  {label}
-                </a>
-              ))}
-              <a
-                href="#engineering"
-                onClick={() => setMenuOpen(false)}
-                className="block rounded-2xl bg-white px-4 py-3 text-base font-semibold text-black hover:bg-gray-200"
-              >
-                Browse resources
-              </a>
-            </div>
-          </div>
-        )}
-      </nav>
+      </div>
       {/* Hero Section */}
       <section
         id="top"
-        className="max-w-6xl mx-auto px-6 py-20 text-center scroll-mt-24"
+        className="mx-auto max-w-6xl scroll-mt-40 px-4 py-12 text-center sm:px-6 sm:py-16 lg:py-20 md:scroll-mt-20"
       >
-        <div className="inline-block px-4 py-2 rounded-full border border-white/20 text-sm text-gray-300 mb-6 bg-white/5">
+        <div className="mb-5 inline-flex rounded-full border border-white/10 bg-white/5 px-3 py-1.5 text-xs text-slate-300 sm:mb-6 sm:px-4 sm:py-2 sm:text-sm">
           Curated for frontend developers
         </div>
-        <h1 className="text-5xl md:text-7xl font-bold tracking-tight mb-6 bg-gradient-to-b from-white to-gray-400 bg-clip-text text-transparent leading-tight">
+        <h1 className="mb-5 bg-gradient-to-b from-white to-gray-400 bg-clip-text text-4xl font-bold leading-[1.08] tracking-tight text-transparent sm:mb-6 sm:text-6xl lg:text-7xl">
           Frontend Developer Portal
         </h1>
-        <p className="text-gray-400 text-lg md:text-xl max-w-3xl mx-auto mb-10">
+        <p className="mx-auto mb-8 max-w-3xl text-base leading-relaxed text-slate-400 sm:text-lg md:text-xl">
           Hand-picked links to engineering blogs, browser updates, CSS
           references, and JavaScript resources — all in one place.
         </p>
 
-        <div className="flex flex-wrap justify-center gap-3 mb-16">
+        <div className="mx-auto mb-10 flex max-w-3xl flex-wrap justify-center gap-2 sm:gap-3 md:mb-12">
           {QUICK_JUMP_SECTIONS.map(({ label, href }) => (
             <a
               key={href}
               href={href}
-              className="px-5 py-2.5 rounded-full border border-white/20 text-sm text-gray-300 hover:border-white/40 hover:bg-white/10 hover:text-white transition-colors"
+              className="rounded-full border border-white/10 bg-white/[0.03] px-3.5 py-2 text-xs text-slate-300 transition-colors hover:border-white/30 hover:bg-white/[0.07] hover:text-white sm:px-5 sm:text-sm"
             >
               {label}
             </a>
@@ -287,81 +288,40 @@ export default function Home() {
           <StatCard number="Free" label="Always open" />
         </div>
 
-        <div className="max-w-4xl mx-auto px-6 mb-16">
-          <label htmlFor="resource-search" className="sr-only">
-            Search resources
-          </label>
-          <div className="relative">
-            <input
-              id="resource-search"
-              type="search"
-              value={searchTerm}
-              onChange={event => setSearchTerm(event.target.value)}
-              placeholder="Search resources by title, description, or category"
-              className="w-full rounded-3xl border border-white/10 bg-white/5 px-5 py-4 text-white placeholder:text-gray-500 focus:border-blue-400 focus:outline-none focus:ring-2 focus:ring-blue-500/30"
-            />
-          </div>
-          <div className="mt-4 flex flex-wrap justify-center gap-2">
-            {FILTER_TAGS.map(filter => (
-              <button
-                key={filter.value}
-                type="button"
-                onClick={() => setActiveSection(filter.value)}
-                className={`rounded-full px-5 py-2 text-sm font-semibold transition-colors ${
-                  activeSection === filter.value
-                    ? "bg-white text-black"
-                    : "border border-white/20 bg-white/5 text-gray-300 hover:border-white/40 hover:bg-white/10"
-                }`}
-              >
-                {filter.label}
-              </button>
-            ))}
-          </div>
-          <p className="mt-4 text-center text-sm text-gray-400">
-            Showing {filteredResources.length} matching resource
-            {filteredResources.length === 1 ? "" : "s"}
-          </p>
-        </div>
       </section>
-      {/* Featured Resources Bento Grid */}
+      {/* Topic Browser */}
       <section
-        aria-labelledby="featured-resources-heading"
-        className="max-w-6xl mx-auto px-6 pb-16 scroll-mt-24"
+        aria-labelledby="topic-browser-heading"
+        className="mx-auto max-w-6xl px-4 pb-12 sm:px-6 sm:pb-16 scroll-mt-24"
       >
         <div className="mb-6 flex items-end justify-between gap-4">
           <div>
             <p className="mb-2 text-xs font-semibold uppercase tracking-wider text-accent">
-              Explore
+              Quick browse
             </p>
             <h2
-              id="featured-resources-heading"
+              id="topic-browser-heading"
               className="text-2xl font-bold text-white"
             >
-              Featured resources
+              Browse by topic
             </h2>
           </div>
-          <a
-            href="#engineering"
-            className="text-sm text-slate-400 transition-colors hover:text-white"
-          >
-            Browse all resources &rarr;
-          </a>
         </div>
-        <div className="grid auto-rows-fr grid-cols-1 gap-4 md:grid-cols-3">
-          {resources.slice(0, 3).map((resource, index) => (
-            <div
-              key={resource.href}
-              className={index === 0 ? "md:col-span-2 md:row-span-2" : ""}
+        <div className="grid grid-cols-2 gap-3 sm:grid-cols-3 lg:grid-cols-7">
+          {FILTER_TAGS.filter(filter => filter.value !== "all").map(filter => (
+            <a
+              key={filter.value}
+              href={`#${filter.value}`}
+              onClick={() => updateSectionFilter(filter.value)}
+              className="group flex min-h-28 flex-col justify-between rounded-xl border border-white/10 bg-white/[0.03] p-4 transition-colors hover:border-accent/50 hover:bg-accent/10"
             >
-              <ColorfulLinkCard
-                icon={resource.icon}
-                title={resource.title}
-                description={resource.description}
-                href={resource.href}
-                borderColor={resource.borderColor}
-                featured={index === 0}
-              />
-            </div>
+              <span className="text-xs font-semibold text-slate-400 group-hover:text-slate-300">
+                {resources.filter(resource => resource.section === filter.value).length} resources
+              </span>
+              <span className="text-sm font-semibold text-white">
+                {filter.label} <span aria-hidden="true" className="text-accent">→</span>
+              </span>
+            </a>
           ))}
         </div>
       </section>
@@ -369,7 +329,7 @@ export default function Home() {
       <section
         id="roadmap"
         aria-labelledby="roadmap-heading"
-        className="max-w-6xl mx-auto px-6 pb-16 scroll-mt-24"
+        className="max-w-6xl mx-auto px-6 pb-16 scroll-mt-40 md:scroll-mt-20"
       >
         <div className="mb-6">
           <p className="mb-2 text-xs font-semibold uppercase tracking-wider text-accent">
@@ -441,7 +401,7 @@ export default function Home() {
       {/* Engineering & Tech News Section */}
       <section
         id="engineering"
-        className="max-w-6xl mx-auto px-6 py-20 border-t border-white/10 scroll-mt-24"
+        className="max-w-6xl mx-auto px-6 py-20 border-t border-white/10 scroll-mt-40 md:scroll-mt-20"
       >
         <div className="text-center mb-16">
           <h2 className="text-4xl md:text-5xl font-bold mb-4">
@@ -453,7 +413,10 @@ export default function Home() {
           </p>
         </div>
 
-        <div className="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 gap-6">
+        <div
+          key={filterAnimationVersion}
+          className={`grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 gap-6 ${filterAnimationVersion > 0 ? "filter-fade-in" : ""}`}
+        >
           {getSectionResources("engineering").map(r => (
             <ColorfulLinkCard
               key={r.href}
@@ -474,7 +437,7 @@ export default function Home() {
       {/* Browser & Engines Section */}
       <section
         id="browsers"
-        className="max-w-6xl mx-auto px-6 py-20 border-t border-white/10 scroll-mt-24"
+        className="max-w-6xl mx-auto px-6 py-20 border-t border-white/10 scroll-mt-40 md:scroll-mt-20"
       >
         <div className="text-center mb-16">
           <h2 className="text-4xl md:text-5xl font-bold mb-4">
@@ -485,7 +448,10 @@ export default function Home() {
           </p>
         </div>
 
-        <div className="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 gap-6">
+        <div
+          key={filterAnimationVersion}
+          className={`grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 gap-6 ${filterAnimationVersion > 0 ? "filter-fade-in" : ""}`}
+        >
           {getSectionResources("browsers").map(r => (
             <ColorfulLinkCard
               key={r.href}
@@ -506,7 +472,7 @@ export default function Home() {
       {/* Video Channels Section */}
       <section
         id="videos"
-        className="max-w-6xl mx-auto px-6 py-20 border-t border-white/10 scroll-mt-24"
+        className="max-w-6xl mx-auto px-6 py-20 border-t border-white/10 scroll-mt-40 md:scroll-mt-20"
       >
         <div className="text-center mb-16">
           <h2 className="text-4xl md:text-5xl font-bold mb-4">
@@ -518,7 +484,10 @@ export default function Home() {
           </p>
         </div>
 
-        <div className="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 gap-6">
+        <div
+          key={filterAnimationVersion}
+          className={`grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 gap-6 ${filterAnimationVersion > 0 ? "filter-fade-in" : ""}`}
+        >
           {getSectionResources("videos").map(r => (
             <ColorfulLinkCard
               key={r.href}
@@ -540,7 +509,7 @@ export default function Home() {
       {/* CSS Resources Section */}
       <section
         id="css"
-        className="max-w-6xl mx-auto px-6 py-20 border-t border-white/10 scroll-mt-24"
+        className="max-w-6xl mx-auto px-6 py-20 border-t border-white/10 scroll-mt-40 md:scroll-mt-20"
       >
         <div className="text-center mb-16">
           <h2 className="text-4xl md:text-5xl font-bold mb-4">CSS Resources</h2>
@@ -550,7 +519,10 @@ export default function Home() {
           </p>
         </div>
 
-        <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-6">
+        <div
+          key={filterAnimationVersion}
+          className={`grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-6 ${filterAnimationVersion > 0 ? "filter-fade-in" : ""}`}
+        >
           {getSectionResources("css").map(r => (
             <ColorfulLinkCard
               key={r.href}
@@ -572,7 +544,7 @@ export default function Home() {
       {/* JavaScript Resources Section */}
       <section
         id="javascript"
-        className="max-w-6xl mx-auto px-6 py-20 border-t border-white/10 scroll-mt-24"
+        className="max-w-6xl mx-auto px-6 py-20 border-t border-white/10 scroll-mt-40 md:scroll-mt-20"
       >
         <div className="text-center mb-16">
           <h2 className="text-4xl md:text-5xl font-bold mb-4">
@@ -582,7 +554,10 @@ export default function Home() {
             Explore essential JavaScript tools and documentation
           </p>
         </div>
-        <div className="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 gap-6">
+        <div
+          key={filterAnimationVersion}
+          className={`grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 gap-6 ${filterAnimationVersion > 0 ? "filter-fade-in" : ""}`}
+        >
           {getSectionResources("javascript").map(r => (
             <ColorfulLinkCard
               key={r.href}
@@ -603,7 +578,7 @@ export default function Home() {
       {/* Glossary Section */}
       <section
         id="glossary"
-        className="max-w-6xl mx-auto px-6 py-20 border-t border-white/10 scroll-mt-24"
+        className="max-w-6xl mx-auto px-6 py-20 border-t border-white/10 scroll-mt-40 md:scroll-mt-20"
       >
         <div className="text-center mb-16">
           <h2 className="text-4xl md:text-5xl font-bold mb-4">
@@ -613,7 +588,10 @@ export default function Home() {
             Clear definitions for web platform, CSS, and accessibility terms
           </p>
         </div>
-        <div className="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 gap-6">
+        <div
+          key={filterAnimationVersion}
+          className={`grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 gap-6 ${filterAnimationVersion > 0 ? "filter-fade-in" : ""}`}
+        >
           {getSectionResources("glossary").map(r => (
             <ColorfulLinkCard
               key={r.href}
@@ -634,28 +612,72 @@ export default function Home() {
       {/* Games Section */}
       <section
         id="games"
-        className="max-w-6xl mx-auto px-6 py-20 border-t border-white/10 scroll-mt-24"
+        className="mx-auto max-w-6xl scroll-mt-40 border-t border-white/10 px-4 py-14 sm:px-6 sm:py-20 md:scroll-mt-20"
       >
-        <div className="text-center mb-16">
-          <h2 className="text-4xl md:text-5xl font-bold mb-4">Games</h2>
-          <p className="text-gray-400 text-lg max-w-2xl mx-auto">
-            Take a break and play a classic game.
+        <div className="mb-8 flex flex-col gap-3 sm:mb-10 sm:flex-row sm:items-end sm:justify-between">
+          <div>
+            <p className="mb-2 text-xs font-semibold uppercase tracking-wider text-emerald-300">
+              Take a break
+            </p>
+            <h2 className="text-3xl font-bold tracking-tight text-white sm:text-4xl">
+              Play a game
+            </h2>
+          </div>
+          <p className="max-w-xl text-sm leading-relaxed text-slate-400 sm:text-base">
+            Step away from the docs and challenge yourself to a quick classic.
           </p>
         </div>
-        <div className="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 gap-6">
-          {getSectionResources("games").map(game => (
-            <ColorfulLinkCard
-              key={game.href}
-              icon={game.icon}
-              title={game.title}
-              description={game.description}
-              href={game.href}
-              borderColor={game.borderColor}
-            />
-          ))}
+        <div
+          key={filterAnimationVersion}
+          className={`grid gap-4 sm:grid-cols-2 ${filterAnimationVersion > 0 ? "filter-fade-in" : ""}`}
+        >
+          {getSectionResources("games").map(game => {
+            const content = (
+              <>
+                <div className="flex items-start justify-between gap-4">
+                  <span
+                    aria-hidden="true"
+                    className="grid size-14 place-items-center rounded-2xl border border-emerald-200/15 bg-emerald-300/10 text-3xl"
+                  >
+                    {game.icon}
+                  </span>
+                  <span className="rounded-full border border-emerald-200/15 bg-emerald-300/5 px-3 py-1 text-xs font-medium text-emerald-200">
+                    Play in browser
+                  </span>
+                </div>
+                <div className="mt-8">
+                  <h3 className="text-2xl font-bold text-white">{game.title}</h3>
+                  <p className="mt-2 max-w-md text-sm leading-relaxed text-slate-400">
+                    {game.description}
+                  </p>
+                </div>
+                <span className="mt-7 inline-flex items-center gap-2 text-sm font-semibold text-emerald-200 transition-colors group-hover:text-emerald-100">
+                  Start playing <span aria-hidden="true">→</span>
+                </span>
+              </>
+            );
+            const className =
+              "group flex min-h-64 flex-col rounded-3xl border border-emerald-200/15 bg-gradient-to-br from-emerald-300/[0.08] via-card to-card p-6 transition-colors hover:border-emerald-200/35 hover:from-emerald-300/[0.12] sm:p-8";
+
+            return game.href.startsWith("/") ? (
+              <Link key={game.href} href={game.href} className={className}>
+                {content}
+              </Link>
+            ) : (
+              <a
+                key={game.href}
+                href={game.href}
+                target="_blank"
+                rel="noopener noreferrer"
+                className={className}
+              >
+                {content}
+              </a>
+            );
+          })}
         </div>
         {getSectionResources("games").length === 0 && (
-          <p className="mt-6 text-center text-gray-400">
+          <p className="rounded-2xl border border-white/10 bg-white/[0.03] px-4 py-8 text-center text-slate-400">
             No games match your search.
           </p>
         )}

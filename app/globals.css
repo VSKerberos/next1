@@ -3,6 +3,7 @@
 
 html {
   scroll-behavior: smooth;
+  overflow-x: clip;
 }
 
 :root {
@@ -21,4 +22,29 @@ body {
   background: var(--background);
   color: var(--foreground);
   font-family: var(--font-geist-sans), system-ui, sans-serif;
+  overflow-x: clip;
+}
+
+.filter-fade-in {
+  animation: filter-fade-in 220ms ease-out both;
+}
+
+@keyframes filter-fade-in {
+  from {
+    opacity: 0;
+  }
+
+  to {
+    opacity: 1;
+  }
+}
+
+@media (prefers-reduced-motion: reduce) {
+  html {
+    scroll-behavior: auto;
+  }
+
+  .filter-fade-in {
+    animation: none;
+  }
 }
