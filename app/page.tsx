@@ -41,6 +41,7 @@ const QUICK_JUMP_SECTIONS = [
   { label: "Glossary", href: "#glossary" },
   { label: "Web Tools", href: "#tools" },
   { label: "Playground", href: "#playground" },
+  { label: "Saved", href: "#saved-resources" },
 ] as const;
 
 const FILTER_TAGS = [
@@ -53,6 +54,9 @@ const FILTER_TAGS = [
   { label: "JavaScript", value: "javascript" as const },
   { label: "Glossary", value: "glossary" as const },
 ] as const;
+
+const FAVORITES_STORAGE_KEY = "frontend-committee:favorites";
+const READ_LATER_STORAGE_KEY = "frontend-committee:read-later";
 
 const BORDER_CLASSES: Record<string, string> = {
   purple: "border-purple-500 hover:border-purple-400",
@@ -75,30 +79,43 @@ const StatCard = ({ number, label }: { number: string; label: string }) => (
   </div>
 );
 
+function readStoredResourceHrefs(key: string) {
+  const storedValue = window.localStorage.getItem(key);
+  if (storedValue === null) {
+    return new Set<string>();
+  }
+
+  const parsedValue: unknown = JSON.parse(storedValue);
+  if (
+    !Array.isArray(parsedValue) ||
+    !parsedValue.every(value => typeof value === "string")
+  ) {
+    throw new Error(`Saved resource data in "${key}" is invalid.`);
+  }
+
+  return new Set(parsedValue);
+}
+
 const ColorfulLinkCard = ({
-  icon,
-  title,
-  description,
-  href,
-  borderColor,
+  resource,
   featured = false,
+  isFavorite,
+  isReadLater,
+  storageReady,
+  onToggleFavorite,
+  onToggleReadLater,
 }: {
-  icon: string;
-  title: string;
-  description: string;
-  href: string;
-  borderColor: string;
+  resource: Resource;
   featured?: boolean;
+  isFavorite: boolean;
+  isReadLater: boolean;
+  storageReady: boolean;
+  onToggleFavorite: () => void;
+  onToggleReadLater: () => void;
 }) => {
+  const { icon, title, description, href, borderColor } = resource;
   const content = (
     <>
-      <div
-        className={`mb-3 text-3xl transition-transform duration-300 ${
-          featured ? "" : "group-hover:scale-110"
-        }`}
-      >
-        {icon}
-      </div>
       <h3 className="text-lg font-semibold text-white mb-2">{title}</h3>
       <p className="text-gray-400 text-sm leading-relaxed mb-4">{description}</p>
       {featured && (
@@ -127,26 +144,71 @@ const ColorfulLinkCard = ({
       </span>
     </>
   );
-  const className = `flex h-full min-h-40 flex-col overflow-hidden rounded-2xl border bg-card ${BORDER_CLASSES[borderColor] ?? "border-white/10"} p-5 transition-all duration-300 hover:-translate-y-0.5 hover:scale-[1.01] hover:bg-card-hover hover:shadow-xl hover:shadow-accent/10 focus-visible:-translate-y-0.5 focus-visible:scale-[1.01] focus-visible:shadow-xl focus-visible:shadow-accent/10 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-accent/50 motion-reduce:transition-none motion-reduce:transform-none group no-underline`;
+  const cardClassName = `flex h-full min-h-40 flex-col overflow-hidden rounded-2xl border bg-card ${BORDER_CLASSES[borderColor] ?? "border-white/10"} p-5 transition-all duration-300 hover:-translate-y-0.5 hover:scale-[1.01] hover:bg-card-hover hover:shadow-xl hover:shadow-accent/10 motion-reduce:transition-none motion-reduce:transform-none group`;
+  const linkClassName =
+    "flex flex-1 flex-col rounded outline-none focus-visible:ring-2 focus-visible:ring-accent/50 no-underline";
 
-  return href.startsWith("/") ? (
-    <Link href={href} className={className}>
-      {content}
-    </Link>
-  ) : (
-    <a
-      href={href}
-      target="_blank"
-      rel="noopener noreferrer"
-      className={className}
-    >
-      {content}
-    </a>
+  return (
+    <article className={cardClassName}>
+      <div className="mb-3 flex items-start justify-between gap-3">
+        <span
+          aria-hidden="true"
+          className={`text-3xl transition-transform duration-300 ${
+            featured ? "" : "group-hover:scale-110"
+          }`}
+        >
+          {icon}
+        </span>
+        <div className="flex flex-wrap justify-end gap-2">
+          <button
+            type="button"
+            aria-label={`${isFavorite ? "Remove from favorites" : "Add to favorites"}: ${title}`}
+            aria-pressed={isFavorite}
+            disabled={!storageReady}
+            onClick={onToggleFavorite}
+            className="rounded-lg border border-white/10 bg-white/[0.03] px-2.5 py-2 text-sm text-amber-300 transition-colors hover:border-amber-300/40 hover:bg-amber-300/10 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-amber-300/50 disabled:cursor-not-allowed disabled:opacity-50"
+          >
+            <span aria-hidden="true">{isFavorite ? "★" : "☆"}</span>
+          </button>
+          <button
+            type="button"
+            aria-label={`${isReadLater ? "Remove from reading list" : "Save for later"}: ${title}`}
+            aria-pressed={isReadLater}
+            disabled={!storageReady}
+            onClick={onToggleReadLater}
+            className="rounded-lg border border-white/10 bg-white/[0.03] px-2.5 py-2 text-xs text-slate-300 transition-colors hover:border-white/30 hover:bg-white/[0.08] focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-accent/50 disabled:cursor-not-allowed disabled:opacity-50"
+          >
+            {isReadLater ? "Saved" : "Read later"}
+          </button>
+        </div>
+      </div>
+      {href.startsWith("/") ? (
+        <Link href={href} className={linkClassName}>
+          {content}
+        </Link>
+      ) : (
+        <a
+          href={href}
+          target="_blank"
+          rel="noopener noreferrer"
+          className={linkClassName}
+        >
+          {content}
+        </a>
+      )}
+    </article>
   );
 };
 
 export default function Home() {
   const [searchTerm, setSearchTerm] = useState("");
+  const [favoriteHrefs, setFavoriteHrefs] = useState<Set<string>>(new Set());
+  const [readLaterHrefs, setReadLaterHrefs] = useState<Set<string>>(new Set());
+  const [savedListTab, setSavedListTab] = useState<"favorites" | "read-later">(
+    "favorites",
+  );
+  const [storageReady, setStorageReady] = useState(false);
+  const [storageError, setStorageError] = useState<string | null>(null);
   const [activeSection, setActiveSection] = useState<
     "all" | Resource["section"]
   >("all");
@@ -155,6 +217,28 @@ export default function Home() {
   const [scrollRequest, setScrollRequest] = useState<{
     targetId: string;
   } | null>(null);
+
+  useEffect(() => {
+    const timerId = window.setTimeout(() => {
+      try {
+        const storedFavorites = readStoredResourceHrefs(FAVORITES_STORAGE_KEY);
+        const storedReadLater = readStoredResourceHrefs(READ_LATER_STORAGE_KEY);
+        setFavoriteHrefs(storedFavorites);
+        setReadLaterHrefs(storedReadLater);
+        setStorageReady(true);
+      } catch (error) {
+        console.error(
+          "Could not load saved resources from local storage.",
+          error,
+        );
+        setStorageError(
+          "Saved resources could not be loaded from this browser. Saving is disabled.",
+        );
+      }
+    }, 0);
+
+    return () => window.clearTimeout(timerId);
+  }, []);
 
   useEffect(() => {
     if (!scrollRequest) return;
@@ -177,6 +261,36 @@ export default function Home() {
     updateSectionFilter(section);
     const targetId = section === "all" ? "top" : section;
     setScrollRequest({ targetId });
+  };
+
+  const toggleSavedHref = (
+    href: string,
+    storageKey: string,
+    savedHrefs: Set<string>,
+    updateSavedHrefs: (next: Set<string>) => void,
+  ) => {
+    const nextSavedHrefs = new Set(savedHrefs);
+    if (nextSavedHrefs.has(href)) {
+      nextSavedHrefs.delete(href);
+    } else {
+      nextSavedHrefs.add(href);
+    }
+
+    try {
+      window.localStorage.setItem(storageKey, JSON.stringify([...nextSavedHrefs]));
+      updateSavedHrefs(nextSavedHrefs);
+      setStorageError(null);
+    } catch (error) {
+      console.error("Could not save resources to local storage.", error);
+      setStorageError(
+        "Changes could not be saved in this browser. Your current selections will last until you leave.",
+      );
+    }
+  };
+
+  const openSavedList = (tab: "favorites" | "read-later") => {
+    setSavedListTab(tab);
+    setScrollRequest({ targetId: "saved-resources" });
   };
 
   const filteredResources = useMemo(
@@ -217,6 +331,39 @@ export default function Home() {
     section === "playground"
       ? playgroundResources
       : filteredResources.filter(resource => resource.section === section);
+
+  const savedResourceHrefs =
+    savedListTab === "favorites" ? favoriteHrefs : readLaterHrefs;
+  const savedResources = resources.filter(
+    resource =>
+      resource.section !== "playground" &&
+      savedResourceHrefs.has(resource.href),
+  );
+  const renderResourceCard = (resource: Resource) => (
+    <ColorfulLinkCard
+      key={resource.href}
+      resource={resource}
+      isFavorite={favoriteHrefs.has(resource.href)}
+      isReadLater={readLaterHrefs.has(resource.href)}
+      storageReady={storageReady}
+      onToggleFavorite={() =>
+        toggleSavedHref(
+          resource.href,
+          FAVORITES_STORAGE_KEY,
+          favoriteHrefs,
+          setFavoriteHrefs,
+        )
+      }
+      onToggleReadLater={() =>
+        toggleSavedHref(
+          resource.href,
+          READ_LATER_STORAGE_KEY,
+          readLaterHrefs,
+          setReadLaterHrefs,
+        )
+      }
+    />
+  );
 
   return (
     <main className="min-h-screen bg-gradient-to-b from-transparent via-slate-900/80 to-transparent text-white">
@@ -261,6 +408,22 @@ export default function Home() {
                 {filter.label}
               </button>
             ))}
+            <button
+              type="button"
+              onClick={() => openSavedList("favorites")}
+              aria-pressed={savedListTab === "favorites"}
+              className="shrink-0 rounded-full border border-amber-300/20 bg-amber-300/[0.05] px-3.5 py-2 text-xs font-semibold text-amber-100 transition-colors hover:border-amber-300/40 hover:bg-amber-300/10 sm:text-sm"
+            >
+              ★ Favorites ({favoriteHrefs.size})
+            </button>
+            <button
+              type="button"
+              onClick={() => openSavedList("read-later")}
+              aria-pressed={savedListTab === "read-later"}
+              className="shrink-0 rounded-full border border-white/10 bg-white/[0.03] px-3.5 py-2 text-xs font-semibold text-slate-300 transition-colors hover:border-white/30 hover:bg-white/[0.07] sm:text-sm"
+            >
+              Read later ({readLaterHrefs.size})
+            </button>
           </div>
           <p className="shrink-0 text-xs text-slate-400 lg:ml-auto lg:text-sm">
             {filteredResources.length} matches
@@ -347,6 +510,77 @@ export default function Home() {
               </span>
             </a>
           ))}
+        </div>
+      </section>
+      <section
+        id="saved-resources"
+        aria-labelledby="saved-resources-heading"
+        className="mx-auto max-w-6xl scroll-mt-40 border-t border-white/10 px-4 py-14 sm:px-6 sm:py-16 md:scroll-mt-20"
+      >
+        <div className="mb-6 flex flex-col gap-4 sm:flex-row sm:items-end sm:justify-between">
+          <div>
+            <p className="mb-2 text-xs font-semibold uppercase tracking-wider text-accent">
+              Just for you
+            </p>
+            <h2
+              id="saved-resources-heading"
+              className="text-2xl font-bold text-white"
+            >
+              Your saved resources
+            </h2>
+            <p className="mt-2 text-sm text-slate-400">
+              Saved in this browser only. No account needed.
+            </p>
+          </div>
+          <div
+            role="group"
+            aria-label="Choose saved resources"
+            className="flex gap-2"
+          >
+            <button
+              type="button"
+              aria-pressed={savedListTab === "favorites"}
+              onClick={() => setSavedListTab("favorites")}
+              className={`rounded-full px-4 py-2 text-sm font-semibold transition-colors ${
+                savedListTab === "favorites"
+                  ? "bg-amber-300 text-slate-950"
+                  : "border border-white/10 bg-white/[0.03] text-slate-300 hover:border-white/30"
+              }`}
+            >
+              Favorites
+            </button>
+            <button
+              type="button"
+              aria-pressed={savedListTab === "read-later"}
+              onClick={() => setSavedListTab("read-later")}
+              className={`rounded-full px-4 py-2 text-sm font-semibold transition-colors ${
+                savedListTab === "read-later"
+                  ? "bg-white text-slate-950"
+                  : "border border-white/10 bg-white/[0.03] text-slate-300 hover:border-white/30"
+              }`}
+            >
+              Read later
+            </button>
+          </div>
+        </div>
+        {storageError && (
+          <p
+            role="alert"
+            className="mb-4 rounded-xl border border-red-400/20 bg-red-400/5 px-4 py-3 text-sm text-red-200"
+          >
+            {storageError}
+          </p>
+        )}
+        <div className="grid grid-cols-1 gap-4 sm:grid-cols-2 md:grid-cols-3">
+          {savedResources.length > 0 ? (
+            savedResources.map(renderResourceCard)
+          ) : (
+            <p className="col-span-full rounded-2xl border border-white/10 bg-white/[0.03] px-4 py-8 text-center text-slate-400">
+              {savedListTab === "favorites"
+                ? "No favorites yet. Select the star on any resource card to save it here."
+                : "Your reading list is empty. Select Read later on a resource card to save it here."}
+            </p>
+          )}
         </div>
       </section>
       {/* Interactive Roadmap Module */}
@@ -441,16 +675,7 @@ export default function Home() {
           key={filterAnimationVersion}
           className={`grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 gap-6 ${filterAnimationVersion > 0 ? "filter-fade-in" : ""}`}
         >
-          {getSectionResources("engineering").map(r => (
-            <ColorfulLinkCard
-              key={r.href}
-              icon={r.icon}
-              title={r.title}
-              description={r.description}
-              href={r.href}
-              borderColor={r.borderColor}
-            />
-          ))}
+          {getSectionResources("engineering").map(renderResourceCard)}
         </div>
         {getSectionResources("engineering").length === 0 && (
           <p className="mt-6 text-center text-gray-400">
@@ -476,16 +701,7 @@ export default function Home() {
           key={filterAnimationVersion}
           className={`grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 gap-6 ${filterAnimationVersion > 0 ? "filter-fade-in" : ""}`}
         >
-          {getSectionResources("browsers").map(r => (
-            <ColorfulLinkCard
-              key={r.href}
-              icon={r.icon}
-              title={r.title}
-              description={r.description}
-              href={r.href}
-              borderColor={r.borderColor}
-            />
-          ))}
+          {getSectionResources("browsers").map(renderResourceCard)}
         </div>
         {getSectionResources("browsers").length === 0 && (
           <p className="mt-6 text-center text-gray-400">
@@ -512,16 +728,7 @@ export default function Home() {
           key={filterAnimationVersion}
           className={`grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 gap-6 ${filterAnimationVersion > 0 ? "filter-fade-in" : ""}`}
         >
-          {getSectionResources("videos").map(r => (
-            <ColorfulLinkCard
-              key={r.href}
-              icon={r.icon}
-              title={r.title}
-              description={r.description}
-              href={r.href}
-              borderColor={r.borderColor}
-            />
-          ))}
+          {getSectionResources("videos").map(renderResourceCard)}
         </div>
         {getSectionResources("videos").length === 0 && (
           <p className="mt-6 text-center text-gray-400">
@@ -547,16 +754,7 @@ export default function Home() {
           key={filterAnimationVersion}
           className={`grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-6 ${filterAnimationVersion > 0 ? "filter-fade-in" : ""}`}
         >
-          {getSectionResources("css").map(r => (
-            <ColorfulLinkCard
-              key={r.href}
-              icon={r.icon}
-              title={r.title}
-              description={r.description}
-              href={r.href}
-              borderColor={r.borderColor}
-            />
-          ))}
+          {getSectionResources("css").map(renderResourceCard)}
         </div>
         {getSectionResources("css").length === 0 && (
           <p className="mt-6 text-center text-gray-400">
@@ -580,16 +778,7 @@ export default function Home() {
           key={filterAnimationVersion}
           className={`grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 gap-6 ${filterAnimationVersion > 0 ? "filter-fade-in" : ""}`}
         >
-          {getSectionResources("tools").map(r => (
-            <ColorfulLinkCard
-              key={r.href}
-              icon={r.icon}
-              title={r.title}
-              description={r.description}
-              href={r.href}
-              borderColor={r.borderColor}
-            />
-          ))}
+          {getSectionResources("tools").map(renderResourceCard)}
         </div>
         {getSectionResources("tools").length === 0 && (
           <p className="mt-6 text-center text-gray-400">
@@ -615,16 +804,7 @@ export default function Home() {
           key={filterAnimationVersion}
           className={`grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 gap-6 ${filterAnimationVersion > 0 ? "filter-fade-in" : ""}`}
         >
-          {getSectionResources("javascript").map(r => (
-            <ColorfulLinkCard
-              key={r.href}
-              icon={r.icon}
-              title={r.title}
-              description={r.description}
-              href={r.href}
-              borderColor={r.borderColor}
-            />
-          ))}
+          {getSectionResources("javascript").map(renderResourceCard)}
         </div>
         {getSectionResources("javascript").length === 0 && (
           <p className="mt-6 text-center text-gray-400">
@@ -649,16 +829,7 @@ export default function Home() {
           key={filterAnimationVersion}
           className={`grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 gap-6 ${filterAnimationVersion > 0 ? "filter-fade-in" : ""}`}
         >
-          {getSectionResources("glossary").map(r => (
-            <ColorfulLinkCard
-              key={r.href}
-              icon={r.icon}
-              title={r.title}
-              description={r.description}
-              href={r.href}
-              borderColor={r.borderColor}
-            />
-          ))}
+          {getSectionResources("glossary").map(renderResourceCard)}
         </div>
         {getSectionResources("glossary").length === 0 && (
           <p className="mt-6 text-center text-gray-400">
