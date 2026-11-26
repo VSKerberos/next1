@@ -333,10 +333,10 @@ export default function DominoesPage() {
       <div className="mx-auto max-w-screen-2xl">
         <header className="mb-8 flex flex-wrap items-center justify-between gap-4">
           <Link
-            href="/#games"
+            href="/#playground"
             className="text-sm font-medium text-emerald-200 transition-colors hover:text-white"
           >
-            ← Back to Games
+            ← Back to Playground
           </Link>
           <button
             type="button"

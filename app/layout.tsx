@@ -13,9 +13,9 @@ const geistMono = Geist_Mono({
 });
 
 export const metadata: Metadata = {
-  title: "Frontend Developer Portal",
+  title: "Frontend Committee",
   description:
-    "Curated links for frontend developers — engineering blogs, browser updates, CSS references, and JavaScript resources.",
+    "A curated guide to frontend development and the web platform, with trusted references, tools, learning paths, and community resources.",
 };
 
 export default function RootLayout({

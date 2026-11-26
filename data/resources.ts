@@ -3,10 +3,11 @@ export type Resource = {
     | "engineering"
     | "browsers"
     | "css"
+    | "tools"
     | "javascript"
     | "videos"
     | "glossary"
-    | "games";
+    | "playground";
   icon: string;
   title: string;
   description: string;
@@ -50,18 +51,10 @@ export const resources: Resource[] = [
   },
   {
     section: "engineering",
-    icon: "⚙️",
-    title: "WP Engine Blog",
-    description: "WordPress and web hosting insights",
-    href: "https://wpengine.com/blog/",
-    borderColor: "blue",
-  },
-  {
-    section: "engineering",
     icon: "🎓",
     title: "Frontend Masters Blog",
     description: "Frontend development tutorials and insights",
-    href: "http://frontendmasters.com/blog/",
+    href: "https://frontendmasters.com/blog/",
     borderColor: "purple",
   },
   {
@@ -74,27 +67,11 @@ export const resources: Resource[] = [
   },
   {
     section: "engineering",
-    icon: "🔐",
-    title: "Auth0 Blog",
-    description: "Authentication and identity insights",
-    href: "https://auth0.com/blog/",
-    borderColor: "red",
-  },
-  {
-    section: "engineering",
     icon: "⚡",
     title: "TLDR Tech",
     description: "Daily tech news summaries",
     href: "https://tldr.tech/",
     borderColor: "yellow",
-  },
-  {
-    section: "engineering",
-    icon: "📊",
-    title: "SRE Weekly",
-    description: "Site Reliability Engineering news",
-    href: "https://sreweekly.com/",
-    borderColor: "green",
   },
   {
     section: "engineering",
@@ -128,15 +105,6 @@ export const resources: Resource[] = [
     href: "https://www.smashingmagazine.com/articles/",
     borderColor: "yellow",
   },
-  {
-    section: "engineering",
-    icon: "📰",
-    title: "TechTarget",
-    description:
-      "Global IT news and insights on enterprise AI, security, and data",
-    href: "https://www.techtarget.com/",
-    borderColor: "indigo",
-  },
 
   // Browsers
   {
@@ -152,7 +120,7 @@ export const resources: Resource[] = [
     icon: "🔷",
     title: "Chrome Developer Blog",
     description: "Chrome browser updates and features",
-    href: "https://developer.chrome.com/blog?hl=tr",
+    href: "https://developer.chrome.com/blog/",
     borderColor: "blue",
   },
   {
@@ -223,15 +191,6 @@ export const resources: Resource[] = [
   // Video Channels
   {
     section: "videos",
-    icon: "🎨",
-    title: "AI Engineer",
-    description:
-      "We turn high signal in-person events for the top AI engineers, founders, leaders, and researchers in the world into the best free learning opportunities for ",
-    href: "https://www.youtube.com/@aiDotEngineer",
-    borderColor: "pink",
-  },
-  {
-    section: "videos",
     icon: "🎬",
     title: "freeCodeCamp",
     description: "Free programming tutorials, projects, and full courses",
@@ -280,14 +239,6 @@ export const resources: Resource[] = [
   },
   {
     section: "videos",
-    icon: "💻",
-    title: "Microsoft Developer",
-    description: "Developer tools, cloud, AI, and modern web content",
-    href: "https://www.youtube.com/@microsoftdeveloper",
-    borderColor: "indigo",
-  },
-  {
-    section: "videos",
     icon: "📘",
     title: "JavaScript Mastery",
     description: "React, Next.js, and modern JavaScript app builds",
@@ -302,23 +253,13 @@ export const resources: Resource[] = [
     href: "https://www.youtube.com/@KevinPowell",
     borderColor: "pink",
   },
-  {
-    section: "videos",
-    icon: "🎨",
-    title: "Rise8",
-    description:
-      "Rise8 exists to create a future where fewer bad things happen because of bad software by enabling large enterprises to continuously deliver valuable software users love.",
-    href: "https://www.youtube.com/@Rise8-Software",
-    borderColor: "pink",
-  },
-
   // CSS
   {
     section: "css",
     icon: "⏱️",
     title: "Transition.Style",
     description: "Create smooth CSS transitions and easing animations",
-    href: "https://www.transition.style/#in:circle:hesitate",
+    href: "https://www.transition.style/",
     borderColor: "purple",
   },
   {
@@ -326,11 +267,11 @@ export const resources: Resource[] = [
     icon: "✨",
     title: "Animista",
     description: "Ready-to-use CSS animations library",
-    href: "https://animista.net/play/basic/scale-down",
+    href: "https://animista.net/",
     borderColor: "pink",
   },
   {
-    section: "css",
+    section: "tools",
     icon: "🖼️",
     title: "Base64 Image",
     description: "Convert images to Base64 encoding",
@@ -358,7 +299,7 @@ export const resources: Resource[] = [
     icon: "🔲",
     title: "Fancy Border Radius",
     description: "Advanced border-radius generator",
-    href: "https://9elements.github.io/fancy-border-radius/#29.67.0.35--497.497",
+    href: "https://9elements.github.io/fancy-border-radius/",
     borderColor: "indigo",
   },
   {
@@ -370,10 +311,10 @@ export const resources: Resource[] = [
     borderColor: "teal",
   },
   {
-    section: "css",
+    section: "tools",
     icon: "✅",
     title: "Can I Use",
-    description: "Browser support tables for CSS features",
+    description: "Check browser support for web platform features",
     href: "https://caniuse.com/",
     borderColor: "yellow",
   },
@@ -431,8 +372,8 @@ export const resources: Resource[] = [
     section: "javascript",
     icon: "⚛️",
     title: "React",
-    description: "Introducing React Dev and latest updates",
-    href: "https://react.dev/blog/2023/03/16/introducing-react-dev",
+    description: "Official React documentation, tutorials, and learning resources",
+    href: "https://react.dev/",
     borderColor: "cyan",
   },
   {
@@ -472,7 +413,7 @@ export const resources: Resource[] = [
     icon: "📘",
     title: "TypeScript Weekly",
     description: "Weekly TypeScript news and articles",
-    href: "https://typescript-weekly.com/?ref=inboxreads",
+    href: "https://typescript-weekly.com/",
     borderColor: "cyan",
   },
 
@@ -483,14 +424,6 @@ export const resources: Resource[] = [
     title: "MDN Web Docs Glossary",
     description: "Definitions of common web development terms",
     href: "https://developer.mozilla.org/en-US/docs/Glossary",
-    borderColor: "blue",
-  },
-  {
-    section: "glossary",
-    icon: "📚",
-    title: "TechTarget WhatIs",
-    description: "Definitions of technology terms and concepts",
-    href: "https://www.techtarget.com/whatis/definitions/A",
     borderColor: "blue",
   },
   {
@@ -517,26 +450,9 @@ export const resources: Resource[] = [
     href: "https://university.webflow.com/glossary",
     borderColor: "teal",
   },
+  // Standalone interactive feature
   {
-    section: "glossary",
-    icon: "🧩",
-    title: "Clutch Web Development Glossary",
-    description: "A glossary of 93 essential web development terms",
-    href: "https://clutch.co/resources/web-development-glossary-93-essential-terms",
-    borderColor: "orange",
-  },
-  {
-    section: "glossary",
-    icon: "🎓",
-    title: "Coursera Web Development Terms",
-    description: "Key terms and concepts in web development",
-    href: "https://www.coursera.org/resources/web-development-terms",
-    borderColor: "blue",
-  },
-
-  // Games
-  {
-    section: "games",
+    section: "playground",
     icon: "🎲",
     title: "Dominoes",
     description: "Play a classic draw game against the computer",

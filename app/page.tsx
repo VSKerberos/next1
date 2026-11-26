@@ -39,18 +39,19 @@ const QUICK_JUMP_SECTIONS = [
   { label: "CSS", href: "#css" },
   { label: "JavaScript", href: "#javascript" },
   { label: "Glossary", href: "#glossary" },
-  { label: "Games", href: "#games" },
+  { label: "Web Tools", href: "#tools" },
+  { label: "Playground", href: "#playground" },
 ] as const;
 
 const FILTER_TAGS = [
   { label: "All", value: "all" as const },
   { label: "Engineering", value: "engineering" as const },
   { label: "Browsers", value: "browsers" as const },
+  { label: "Web Tools", value: "tools" as const },
   { label: "Videos", value: "videos" as const },
   { label: "CSS", value: "css" as const },
   { label: "JavaScript", value: "javascript" as const },
   { label: "Glossary", value: "glossary" as const },
-  { label: "Games", value: "games" as const },
 ] as const;
 
 const BORDER_CLASSES: Record<string, string> = {
@@ -197,8 +198,25 @@ export default function Home() {
     [activeSection, searchTerm],
   );
 
+  const playgroundResources = useMemo(
+    () =>
+      resources.filter(resource => {
+        if (resource.section !== "playground" || !searchTerm.trim()) {
+          return resource.section === "playground";
+        }
+
+        const query = searchTerm.toLowerCase();
+        return [resource.title, resource.description, resource.section].some(
+          field => field.toLowerCase().includes(query),
+        );
+      }),
+    [searchTerm],
+  );
+
   const getSectionResources = (section: Resource["section"]) =>
-    filteredResources.filter(resource => resource.section === section);
+    section === "playground"
+      ? playgroundResources
+      : filteredResources.filter(resource => resource.section === section);
 
   return (
     <main className="min-h-screen bg-gradient-to-b from-transparent via-slate-900/80 to-transparent text-white">
@@ -208,7 +226,7 @@ export default function Home() {
             href="#top"
             className="text-lg font-bold tracking-tight text-white sm:text-xl"
           >
-            Frontend Portal
+            Frontend Committee
           </a>
         </div>
       </header>
@@ -254,15 +272,18 @@ export default function Home() {
         id="top"
         className="mx-auto max-w-6xl scroll-mt-40 px-4 py-12 text-center sm:px-6 sm:py-16 lg:py-20 md:scroll-mt-20"
       >
-        <div className="mb-5 inline-flex rounded-full border border-white/10 bg-white/5 px-3 py-1.5 text-xs text-slate-300 sm:mb-6 sm:px-4 sm:py-2 sm:text-sm">
+        <div
+          id="about"
+          className="mb-5 inline-flex scroll-mt-40 rounded-full border border-white/10 bg-white/5 px-3 py-1.5 text-xs text-slate-300 sm:mb-6 sm:px-4 sm:py-2 sm:text-sm"
+        >
           Curated for frontend developers
         </div>
         <h1 className="mb-5 bg-gradient-to-b from-white to-gray-400 bg-clip-text text-4xl font-bold leading-[1.08] tracking-tight text-transparent sm:mb-6 sm:text-6xl lg:text-7xl">
-          Frontend Developer Portal
+          Frontend Committee
         </h1>
         <p className="mx-auto mb-8 max-w-3xl text-base leading-relaxed text-slate-400 sm:text-lg md:text-xl">
-          Hand-picked links to engineering blogs, browser updates, CSS
-          references, and JavaScript resources — all in one place.
+          A curated guide to frontend development and the web platform, with
+          trusted references, tools, learning paths, and community resources.
         </p>
 
         <div className="mx-auto mb-10 flex max-w-3xl flex-wrap justify-center gap-2 sm:gap-3 md:mb-12">
@@ -279,12 +300,15 @@ export default function Home() {
 
         {/* Stats Grid */}
         <div className="grid grid-cols-2 md:grid-cols-4 gap-4 mb-10 max-w-3xl mx-auto">
-          <StatCard number={String(resources.length)} label="Curated links" />
           <StatCard
-            number={String(new Set(resources.map(resource => resource.section)).size)}
-            label="Topic areas"
+            number={String(resources.filter(resource => resource.section !== "playground").length)}
+            label="Curated links"
           />
-          <StatCard number="100%" label="Frontend focus" />
+          <StatCard
+            number={String(new Set(resources.filter(resource => resource.section !== "playground").map(resource => resource.section)).size)}
+            label="Resource topics"
+          />
+          <StatCard number="Web" label="Frontend ecosystem focus" />
           <StatCard number="Free" label="Always open" />
         </div>
 
@@ -541,6 +565,39 @@ export default function Home() {
         )}
       </section>
 
+      {/* Web Tools Section */}
+      <section
+        id="tools"
+        className="max-w-6xl mx-auto px-6 py-20 border-t border-white/10 scroll-mt-40 md:scroll-mt-20"
+      >
+        <div className="text-center mb-16">
+          <h2 className="text-4xl md:text-5xl font-bold mb-4">Web Tools</h2>
+          <p className="text-gray-400 text-lg max-w-2xl mx-auto">
+            Handy tools for preparing web assets and checking browser support.
+          </p>
+        </div>
+        <div
+          key={filterAnimationVersion}
+          className={`grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 gap-6 ${filterAnimationVersion > 0 ? "filter-fade-in" : ""}`}
+        >
+          {getSectionResources("tools").map(r => (
+            <ColorfulLinkCard
+              key={r.href}
+              icon={r.icon}
+              title={r.title}
+              description={r.description}
+              href={r.href}
+              borderColor={r.borderColor}
+            />
+          ))}
+        </div>
+        {getSectionResources("tools").length === 0 && (
+          <p className="mt-6 text-center text-gray-400">
+            No web tools match your search.
+          </p>
+        )}
+      </section>
+
       {/* JavaScript Resources Section */}
       <section
         id="javascript"
@@ -609,9 +666,9 @@ export default function Home() {
           </p>
         )}
       </section>
-      {/* Games Section */}
+      {/* Standalone Playground Feature */}
       <section
-        id="games"
+        id="playground"
         className="mx-auto max-w-6xl scroll-mt-40 border-t border-white/10 px-4 py-14 sm:px-6 sm:py-20 md:scroll-mt-20"
       >
         <div className="mb-8 flex flex-col gap-3 sm:mb-10 sm:flex-row sm:items-end sm:justify-between">
@@ -631,7 +688,7 @@ export default function Home() {
           key={filterAnimationVersion}
           className={`grid gap-4 sm:grid-cols-2 ${filterAnimationVersion > 0 ? "filter-fade-in" : ""}`}
         >
-          {getSectionResources("games").map(game => {
+          {getSectionResources("playground").map(game => {
             const content = (
               <>
                 <div className="flex items-start justify-between gap-4">
@@ -676,9 +733,9 @@ export default function Home() {
             );
           })}
         </div>
-        {getSectionResources("games").length === 0 && (
+        {getSectionResources("playground").length === 0 && (
           <p className="rounded-2xl border border-white/10 bg-white/[0.03] px-4 py-8 text-center text-slate-400">
-            No games match your search.
+            No playground features match your search.
           </p>
         )}
       </section>
@@ -759,8 +816,13 @@ export default function Home() {
                   </a>
                 </li>
                 <li>
-                  <a href="#games" className="hover:text-white transition-colors">
-                    Games
+                  <a href="#tools" className="hover:text-white transition-colors">
+                    Web Tools
+                  </a>
+                </li>
+                <li>
+                  <a href="#playground" className="hover:text-white transition-colors">
+                    Playground
                   </a>
                 </li>
               </ul>
@@ -769,21 +831,35 @@ export default function Home() {
               <h4 className="font-semibold mb-4">About</h4>
               <ul className="space-y-2 text-gray-400 text-sm">
                 <li>
-                  <a href="#top" className="hover:text-white transition-colors">
+                  <a href="#about" className="hover:text-white transition-colors">
                     What is this portal?
                   </a>
                 </li>
-                <li className="text-gray-500">Curated link directory</li>
-                <li className="text-gray-500">For frontend developers</li>
+                <li className="text-gray-500">Curated frontend resources</li>
+                <li className="text-gray-500">References, tools, and learning paths</li>
               </ul>
             </div>
             <div>
               <h4 className="font-semibold mb-4">Contribute</h4>
               <ul className="space-y-2 text-gray-400 text-sm">
-                <li className="text-gray-500">Suggest a link (coming soon)</li>
                 <li>
-                  <a href="#top" className="hover:text-white transition-colors">
-                    Report broken link
+                  <a
+                    href="https://github.com/VSKerberos/next1/issues/new?title=Suggest%20a%20resource"
+                    target="_blank"
+                    rel="noopener noreferrer"
+                    className="hover:text-white transition-colors"
+                  >
+                    Suggest a resource
+                  </a>
+                </li>
+                <li>
+                  <a
+                    href="https://github.com/VSKerberos/next1/issues/new?title=Report%20a%20broken%20link"
+                    target="_blank"
+                    rel="noopener noreferrer"
+                    className="hover:text-white transition-colors"
+                  >
+                    Report a broken link
                   </a>
                 </li>
               </ul>
@@ -793,7 +869,7 @@ export default function Home() {
               <ul className="space-y-2 text-gray-400 text-sm">
                 <li>
                   <a
-                    href="https://github.com"
+                    href="https://github.com/VSKerberos/next1"
                     target="_blank"
                     rel="noopener noreferrer"
                     className="hover:text-white transition-colors"
@@ -811,11 +887,11 @@ export default function Home() {
           </div>
           <div className="border-t border-white/10 pt-8 flex flex-col sm:flex-row justify-between items-center gap-4">
             <p className="text-gray-400 text-sm">
-              © 2026 Frontend Developer Portal. All rights reserved.
+              © 2026 Frontend Committee. All rights reserved.
             </p>
             <div className="flex gap-6 text-gray-400">
               <a
-                href="https://github.com"
+                href="https://github.com/VSKerberos/next1"
                 target="_blank"
                 rel="noopener noreferrer"
                 className="hover:text-white transition-colors"
